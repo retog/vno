@@ -4,7 +4,6 @@ import * as path from "https://deno.land/std@0.83.0/path/mod.ts";
 import * as colors from "https://deno.land/std@0.83.0/fmt/colors.ts";
 import * as http from "https://deno.land/std@0.83.0/http/mod.ts";
 import * as asrt from "https://deno.land/std@0.83.0/testing/asserts.ts";
-
 // third-party
 import _ from "https://cdn.skypack.dev/lodash"; // lodash
 import ProgressBar from "https://deno.land/x/progress@v1.2.3/mod.ts";
@@ -25,7 +24,9 @@ export {
   ProgressBar,
   scssCompiler,
   superoak,
+  serve
 };
 
 
 export * as sfcCompiler from "https://denopkg.com/crewdevio/vue-deno-compiler/mod.ts";
+import serve from "https://raw.githubusercontent.com/crewdevio/Snel/main/src/dev-server/server.ts";

@@ -19,7 +19,7 @@ function Compiler(this: CompilerInterface) {
 // build establishes the build path and overwrites any previous builds
 Compiler.prototype.build = function () {
   try {
-    fs.ensureDirSync(_def.VNO_PATH);
+    // fs.ensureDirSync(_def.VNO_PATH);
 
     if (fs.existsSync(_def.STYLE_PATH)) Deno.removeSync(_def.STYLE_PATH);
     // write to build, lint ignore and import vue with CDN

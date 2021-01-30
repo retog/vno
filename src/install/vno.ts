@@ -1,6 +1,6 @@
 import Initialize from "../strategies/initialize.ts";
 import { creator, info, print, str } from "../command-line/_exp.ts";
-import { fs, oak, path } from "../lib/deps.ts";
+import { fs, oak, path, serve } from "../lib/deps.ts";
 
 // ensure permissions
 const read = { name: "read" } as const;
@@ -30,14 +30,13 @@ if (resRead && resWrite) {
   // vno build || vno run dev
   if ((/build/i).test(args[0]) || /run/i.test(args[0])) {
     let configFile;
+
     // located vno.config.json in file system
-    for await (const file of fs.walk(".")) {
-      const currFile = path.parse(file.path);
-      // when located, save the parsed path object to configFile;
-      if (currFile.name === "vno.config") {
-        configFile = currFile;
-      }
+    if (await (fs.exists("./vno.config.json"))) {
+      const currFile = path.parse("./vno.config.json");
+      configFile = currFile;
     }
+
     if (configFile) {
       const configPath = `${Deno.cwd()}/${configFile.base}`;
       // read the vno.config.json file and parse it into js
@@ -60,64 +59,11 @@ if (resRead && resWrite) {
 
       // vno run dev
       if (/run/i.test(args[0])) {
-        if (/dev/i.test(args[1])) {
-          const { Application, send } = oak;
-          // establish port and hostname
-          const port = Number(options.port) || 3000;
-          const hostname = options.hostname || "0.0.0.0";
-
-          const server = new Application();
-          // respond to requests with appropriate content
-          server.use(async (context, next) => {
-            // locate the request url
-            const { pathname } = context.request.url;
-            // save the path to vno-build dir
-            const buildpath = `${Deno.cwd()}/vno-build`;
-
-            // http response
-            if (pathname === "/") {
-              // render template to the server
-              context.response.body = str.htmlTemplate({ root, ...options });
-            } else if (pathname === "/build.js") {
-              context.response.type = "application/javascript";
-              // bundled javascript
-              await send(context, pathname, {
-                root: buildpath,
-                index: "build.js",
-              });
-            } else if (pathname === "/style.css") {
-              context.response.type = "text/css";
-              // component styles
-              await send(context, pathname, {
-                root: buildpath,
-                index: "style.css",
-              });
-            } else {
-              await next();
-            }
-          });
-          // server error handling
-          server.addEventListener("error", (err) => print.WARN(err));
-          // listen for active server
-          if (import.meta.main) {
-            server.addEventListener(
-              "listen",
-              () => print.LISTEN(port, hostname),
-            );
-            await server.listen({ port, hostname });
-          }
-        } else if (/server/i.test(args[1])) {
-          // retrieve the path to server from vno.config.json and run process
-          try {
-            const handler = (await import(path.resolve(json.server)))?.default;
-            await handler();
-            Deno.exit(0);
-          } catch(err) {
-            console.error(err);
-            Deno.exit(1);
-          }
+        if (/dev\s*/i.test(args[1])) {
+          serve(parseInt(options.port) ?? 3000, "./public", false)
         }
       }
+
     } else {
       print.WARN(
         ">> could not locate vno.config.json \n>> run cmd again in root directory || create vno.config.json",
