@@ -20,10 +20,10 @@ const HTML = {
 };
 
 // relative paths for vno-build/ in compiler.ts
-const VNO_PATH = "vno-build";
-const BUILD_PATH = "vno-build/build.js";
-const STYLE_PATH = "vno-build/style.css";
+// const VNO_PATH = "vno-build";
+const BUILD_PATH = "public/build.js";
+const STYLE_PATH = "public/style.css";
 // ignore linting in build
 const IGNORE = `// deno-lint-ignore-file\n`;
 
-export default { CDN, HTML, VNO_PATH, BUILD_PATH, STYLE_PATH, IGNORE };
+export default { CDN, HTML, BUILD_PATH, STYLE_PATH, IGNORE };
