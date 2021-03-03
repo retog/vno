@@ -2,12 +2,12 @@ import * as parse from "../lib/parser.ts";
 import Component from "../factory/Component.ts";
 import Storage from "../factory/Storage.ts";
 import Queue from "../factory/Queue.ts";
-import { assertEquals, assertNotEquals } from "../lib/deps.ts";
-import { patterns } from "../lib/constants.ts";
+import { assertEquals, assertNotEquals, path } from "../utils/deps.ts";
+import { patterns } from "../utils/constants.ts";
 import { yellow } from "../cli/fns.ts";
 
-const testRoot = new Component("Test", "./test-components/Test.vue");
-const testChild = new Component("TestChild", "./test-components/TestChild.vue");
+const testRoot = new Component("Test", path.join(Deno.cwd(), "./core/__tests__/test-components/Test.vue"));
+const testChild = new Component("TestChild", path.join(Deno.cwd(), "./core/__tests__/test-components/TestChild.vue"));
 
 const storage = new Storage();
 const queue = new Queue();

@@ -1,13 +1,22 @@
 import type { Component, Fctry } from "../dts/factory.d.ts";
 import { configReader } from "../lib/config_reader.ts";
 import { vueLogger } from "../lib/vue_logger.ts";
-import { assertEquals, assertNotEquals } from "../lib/deps.ts";
+import { assertEquals, assertNotEquals } from "../utils/deps.ts";
 
 // configReader tests:
 Deno.test({
   name: "configReader returns object with valid props",
 
   async fn(): Promise<void> {
+    await Deno.writeTextFile("./vno.config.json", JSON.stringify({
+      "root": "App",
+      "entry": "../../example/test_demo/",
+      "vue": 3,
+      "options": {
+        "title": "benchmark test project"
+      }
+    }));
+    
     const config: Fctry.Config | unknown = await configReader();
     assertNotEquals((config as Fctry.Config), undefined);
     assertEquals((config as Fctry.Config).vue, 3);
@@ -18,6 +27,8 @@ Deno.test({
       (config as Fctry.Config).options?.title,
       "benchmark test project",
     );
+
+    await Deno.remove("./vno.config.json");
   },
 });
 

@@ -24,7 +24,11 @@ const HelloVno = Vue.component("hello-vno", {
     </ul>
   </div>
 `,
-  name: 'hello-vno', props: { msg: String, },});
+  name: 'hello-vno',
+  props: {
+    msg: String,
+  },
+});
 
 const App = new Vue({
   template:  /* html */ `
@@ -38,6 +42,9 @@ const App = new Vue({
     />
     <HelloVno msg="you are building: your project with vno" />
   </div>
-`,  name: 'app', components: {HelloVno}});
+`,
+  name: 'app',
+  components: {HelloVno},
+});
 
 App.$mount("#app")
