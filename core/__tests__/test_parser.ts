@@ -6,10 +6,16 @@ import { assertEquals, assertNotEquals, path } from "../utils/deps.ts";
 import { patterns } from "../utils/constants.ts";
 import { yellow } from "../cli/fns.ts";
 
-const testRoot = new Component("Test", path.join(Deno.cwd(), "./core/__tests__/test-components/Test.vue"));
-const testChild = new Component("TestChild", path.join(Deno.cwd(), "./core/__tests__/test-components/TestChild.vue"));
+const testRoot = new Component(
+  "Test",
+  path.join(Deno.cwd(), "./core/__tests__/test-components/Test.vue"),
+);
+const testChild = new Component(
+  "TestChild",
+  path.join(Deno.cwd(), "./core/__tests__/test-components/TestChild.vue"),
+);
 
-const storage = new Storage();
+const storage = Storage.create();
 const queue = new Queue();
 storage.root = testRoot;
 storage.cache(testChild.label, testChild);

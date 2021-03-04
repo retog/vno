@@ -8,9 +8,9 @@ import Factory from "../factory/Factory.ts";
 bench({
   name: "complete vno runtime benchmark",
   runs: 1,
-  func(x: { start: () => void; stop: () => void; }): void {
+  func(x: { start: () => void; stop: () => void }): void {
     x.start();
-    const vnoTest = new Factory();
+    const vnoTest = Factory.create();
     vnoTest.build();
     x.stop();
   },
@@ -18,8 +18,6 @@ bench({
 
 const res = await runBenchmarks();
 console.log(res);
-
-
 
 /*
 
