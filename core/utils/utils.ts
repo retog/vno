@@ -6,7 +6,7 @@ export const indexOfRegExp: Util.IOF = function (rx, arr) {
   return arr.findIndex((el) => rx.test(el));
 };
 
-// trims excess whitespace from an slice of an array and joins as string
+// trims excess whitespace from a slice of an array and joins as string
 export const sliceAndTrim: Util.TRIM = function (input, i, j) {
   if (typeof input === "string") return input;
   return input.slice(i, j).join("").replace(patterns.whitespace, " ");

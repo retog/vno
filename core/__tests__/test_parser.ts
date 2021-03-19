@@ -24,7 +24,7 @@ Deno.test({
     assertNotEquals(testRoot.template, null || undefined);
     assertEquals(typeof testRoot.template, "string");
 
-    yellow(">> Component's template contains not HTML comments\n");
+    yellow(">> Component's template contains no HTML comments\n");
 
     assertEquals(testRoot.template?.match(patterns.htmlComment), null);
 
