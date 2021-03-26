@@ -11,6 +11,7 @@ export const components = "components";
 export const indexhtml = `${pub}/index.html`;
 export const vnoconfig = "vno.config.json";
 
+//options is object of type CreateInputs<--interface
 export const options: CreateInputs = {
   title: "your project",
   root: "App",
@@ -27,6 +28,7 @@ export const reqs: string[] = [
 ];
 
 // command tests
+//these are regex's, searching for something, i means case insensitive
 export const cmnd = {
   create: /create/i,
   build: /build/i,

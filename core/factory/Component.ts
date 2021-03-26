@@ -57,6 +57,8 @@ export default class Component extends Base {
     return data[index].split(/[`'"]/)[1];
   }
 
+
+  //
   public async parseComponent(
     storage: Storage,
     queue: Queue,

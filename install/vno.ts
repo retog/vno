@@ -1,6 +1,7 @@
 import { build, create, flags, run } from "../core/cli/commands.ts";
 import { cmnd } from "../core/cli/constants.ts";
 
+//this is how you pass command line arguments to Deno, every space is an index of an array of args
 const { args } = Deno;
 const command = args[0];
 
@@ -14,6 +15,8 @@ const write = { name: "write" } as const;
 const resRead = await Deno.permissions.request(read);
 const resWrite = await Deno.permissions.request(write);
 
+
+//testing to see the command in the command line
 if (resRead && resWrite) {
   if (cmnd.create.test(command)) await create(args);
   if (cmnd.build.test(command)) await build(args);

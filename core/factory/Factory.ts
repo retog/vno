@@ -8,6 +8,9 @@ import Component from "./Component.ts";
 import Storage from "./Storage.ts";
 import Queue from "./Queue.ts";
 
+
+//
+
 /**
  * Factory class follows the Singelton design pattern
  * only one can be made for each application
@@ -34,6 +37,9 @@ export default class Factory {
    * if an instance has already been made, it returns 
    * the original instance
    */
+
+  //all these properties are saved onto the factory object. 
+  //create storage is looking for the vno config json and assigning properties 
   public static create(options?: Config): Factory {
     if (!Factory.instance) {
       Factory.instance = new Factory(options);
@@ -93,10 +99,11 @@ export default class Factory {
       this.storage.root,
       this.variable,
     );
-
+    //adds root
     this.queue.enqueue(this.storage.root);
 
     while (!this.queue.isEmpty()) {
+      //stays looping until queue is empty - pops one off as current component, parses it.  looks for children components
       const current = this.queue.dequeue() as Component;
       await current.parseComponent(this.storage, this.queue, this.variable);
     }
@@ -104,12 +111,15 @@ export default class Factory {
   /**
    * build is the entry to initiating bundle
    */
+
+  //entrance for user using this  assigned instance of factory.create and starts the compile process
+  //which will create storage - add root to queue, add components to queue, calls parse on first in queue
   public async build(): Promise<Storage> {
     await this.createStorage();
     await this.parseApplication();
 
     writeBundle(this.storage);
-
+   
     return this.storage as Storage;
   }
 

@@ -7,9 +7,16 @@ import { runDevServer } from "./dev.ts";
 import { quietArg } from "./fns.ts";
 import { cmnd } from "./constants.ts";
 
+
+
 export const create = async function (args: string[]): Promise<void> {
+  
+  //.test is method on regex pattern - it returns true/false based on if args[0] is 'create' if no 'create', return
   if (!cmnd.create.test(args[0])) return;
 
+
+  //await statement on install/vno.ts is why we have all this information at the time of run    
+  //pops off each arg of the array to give title, root, port, components
   const mutable = args.slice(1);
   const title = mutable.shift();
   const root = mutable.shift();
@@ -21,7 +28,7 @@ export const create = async function (args: string[]): Promise<void> {
     await fs.ensureDir(dir);
     Deno.chdir(dir);
   }
-
+  //arguments passed into CLI placed into createApplication as obj
   await createApplication({ title, root, port, components });
   return;
 };

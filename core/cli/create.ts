@@ -14,8 +14,9 @@ interface CreateProjectObj {
 export const createApplication = async function (obj: CreateProjectObj) {
   let app = out.options;
 
-  // customize function initializes out/stores answers
+  // app becomes the evaluated result of the customize function invoked with the user arguments
   app = await customize(obj);
+  //displays creating message in green
   fn.green(out.creating);
 
   // progress bar
@@ -36,7 +37,9 @@ export const createApplication = async function (obj: CreateProjectObj) {
   // write to app directory
   await fs.ensureDir(out.pub); // public dir
   await fs.ensureDir(out.components); // components dir
+  //ensureDir/ensureFile are methods that check for a file. if It does not exist, it creates a file.
   await fs.ensureFile(out.indexhtml);
+  //Deno.write then writes into the file that was created by fs.ensureFile
   await Deno.writeTextFile(out.indexhtml, html);
   await fs.ensureFile(out.vnoconfig);
   await Deno.writeTextFile(out.vnoconfig, config);
@@ -52,21 +55,31 @@ export const createApplication = async function (obj: CreateProjectObj) {
 };
 
 export const customize = async function (obj: CreateProjectObj) {
+  
+
+  //all of these needs to be true, if one is undefined preset is undefined - short circuiting
   const preset = obj.title && obj.port && obj.root && obj.components;
+  
+  
+  //out is all the constants being exported from the constants file - 
+  //out.options is referencing the interface that has a title, root, port, components
   let output = out.options;
 
-  // request if a user would like to customize
+  // request if a user would like to customize. 
   if (!preset) {
     const choice = await prompt(out.custom, "yes/no") as string;
+    //if user choises no, returns the values from output
     if (choice.trim()[0].toLowerCase() !== "y") return output;
   }
-
+  //if user types yes goes to lines below and starts customizing
+  //displays init message in green
   fn.green(out.init);
   const reqs = out.reqs.slice();
-
+  
   // project title
   let title;
   if (obj.title) {
+    //if the title exists, remove string "\nPlease enter a title:" from req array
     reqs.pop();
     title = obj.title;
   } else {
