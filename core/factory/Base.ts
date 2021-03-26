@@ -26,11 +26,12 @@ export default abstract class Base {
     this.parsed_data = {};
   }
 
+  
   get source() {
     return this._source;
   }
-
-  // raw data
+  
+  // raw data has content property of raw data in string format
   get temp_data() {
     return this._data.template;
   }
