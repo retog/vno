@@ -6,6 +6,7 @@ import { sfcCompiler } from "../utils/deps.ts";
  * for values relevant to the construction of a Component class
  * 
  */
+
 export default abstract class Base {
   protected _raw: string;
   protected _source: Raw.Source;
@@ -14,6 +15,7 @@ export default abstract class Base {
 
   constructor(public label: string, public path: string) {
     this._raw = Deno.readTextFileSync(path);
+    //lower level utility for compiling vue single file components
     this._source = sfcCompiler.parse(this._raw, {
       filename: `${this.label}.vue`,
       sourceMap: false,

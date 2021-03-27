@@ -24,11 +24,14 @@ export default class Factory {
   private _title!: string;
   private _hostname!: string;
   private _server!: string;
+  //private means only accessible within instance, static refers to this property is shared amongst all instances, instance is availalbe to all instances of factory
   private static instance: Factory;
   private constructor(options?: Config) {
     this.storage = Storage.create();
     this.queue = new Queue();
+    //this variable is only used in Vue3, to mount 
     this.variable = `vno${Math.floor(Math.random() * 100 * 100 * 100)}`;
+    // ?? definition: if "options" is null or undefined, assign this.config to an empty obj of type "Config"
     this._config = options ?? <Config> {};
   }
 
@@ -38,7 +41,7 @@ export default class Factory {
    * the original instance
    */
 
-  //all these properties are saved onto the factory object. 
+  //all the above properties are saved onto the factory object. 
   //create storage is looking for the vno config json and assigning properties 
   public static create(options?: Config): Factory {
     if (!Factory.instance) {
@@ -47,15 +50,18 @@ export default class Factory {
 
     return Factory.instance;
   }
+
   /**
    * assignConfig() runs type checks on the available config,
    * if it fails, it seeks out a vno.config.json to take its place
    * then assigns the data to the Factory's props
    */
   public async assignConfig(): Promise<void> {
+    
+    //line below returns a "vno.config" config file to this.config, throws err if no config file is found
     if (!checkOptions(this.config)) {
       this._config = await configReader() as Config;
-    }
+    }// "config.options?.port" is an example of optional chaining with the safe navigation operator ".?"
     if (this.config.options?.port) {
       this._port = this.config.options.port;
     }
@@ -73,11 +79,14 @@ export default class Factory {
    */
   private async createStorage(): Promise<void> {
     await this.assignConfig();
-
+    //for await creates a loop iterating over async iterable objects including string, array, and array like objs
     for await (
+      //iterates through entry looking for files with .vue extensions
       const file of fs.walk(`${this.config?.entry}`, { exts: ["vue"] })
     ) {
+
       const label = path.parse(file.path).name;
+      //Component is assigned a "filename": `${this.label}.vue`
       const component = new Component(label, file.path);
 
       this.storage.cache(label, component);

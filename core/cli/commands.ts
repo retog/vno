@@ -8,6 +8,8 @@ import { quietArg } from "./fns.ts";
 import { cmnd } from "./constants.ts";
 
 
+//Contains Create, Build, Run, and flag commands
+
 
 export const create = async function (args: string[]): Promise<void> {
   
@@ -33,23 +35,29 @@ export const create = async function (args: string[]): Promise<void> {
   return;
 };
 
+//The Promise<void> syntax means the promise will resolve to undefined
 export const build = async function (args: string[]): Promise<void> {
+//if nothing placed into CLI, return, zero index is the command build
   if (!cmnd.build.test(args[0])) return;
 
   const path = args[1];
   if (path) {
     const dir = `${Deno.cwd()}/${path}`;
+    //tests if the given directory exists, chdir changes the CWD to the specified path 
     if (await fs.exists(dir)) Deno.chdir(dir);
   }
 
   const vno = Factory.create();
+  //vno.build referanced the build function on the Factory prototype chain, not the CLI imput
   await vno.build();
 
-  if (quietArg(args[1]) || quietArg(args[2])) print.QUIET();
+  if (quietArg(args[1]) || quietArg(args[2])) print.QUIET(); //"Vno build complete"
+  //ASCII function prints the logo if quiet is passed as an arg
   else print.ASCII();
 };
 
 export const run = async function (args: string[]): Promise<void> {
+
   if (!cmnd.run.test(args[0])) return;
 
   const vno = Factory.create();
