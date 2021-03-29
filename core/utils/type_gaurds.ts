@@ -3,7 +3,7 @@ import { Component, Config, Storage, Vue } from "../dts/factory.d.ts";
 export function checkOptions(obj: unknown): obj is Config {
   //returns a boolean. checks...
   return obj != null &&
-    
+
     typeof (obj as Config).entry === "string" &&
     typeof (obj as Config).root === "string";
 }
@@ -11,6 +11,7 @@ export function checkOptions(obj: unknown): obj is Config {
 export function checkVueVersion(obj: unknown,): obj is Config & { vue: Vue.Version } {
   return (obj as Config).vue != null &&  (obj as Config).vue === 2 || (obj as Config).vue === 3;
 }
+
 
 export function isStorageReady(obj: unknown): obj is Storage {
   if (

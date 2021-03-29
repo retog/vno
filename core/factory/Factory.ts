@@ -29,20 +29,20 @@ export default class Factory {
   private constructor(options?: Config) {
     this.storage = Storage.create();
     this.queue = new Queue();
-    //this variable is only used in Vue3, to mount 
+    //this variable is only used in Vue3, to mount
     this.variable = `vno${Math.floor(Math.random() * 100 * 100 * 100)}`;
     // ?? definition: if "options" is null or undefined, assign this.config to an empty obj of type "Config"
     this._config = options ?? <Config> {};
   }
 
   /**
-   * an instance is made through the `create` method 
-   * if an instance has already been made, it returns 
+   * an instance is made through the `create` method
+   * if an instance has already been made, it returns
    * the original instance
    */
 
-  //all the above properties are saved onto the factory object. 
-  //create storage is looking for the vno config json and assigning properties 
+  //all the above properties are saved onto the factory object.
+  //create storage is looking for the vno config json and assigning properties
   public static create(options?: Config): Factory {
     if (!Factory.instance) {
       Factory.instance = new Factory(options);
@@ -57,7 +57,7 @@ export default class Factory {
    * then assigns the data to the Factory's props
    */
   public async assignConfig(): Promise<void> {
-    
+
     //line below returns a "vno.config" config file to this.config, throws err if no config file is found
     if (!checkOptions(this.config)) {
       this._config = await configReader() as Config;
@@ -101,8 +101,9 @@ export default class Factory {
    * begins the Queue starting with the app Root
    */
   private async parseApplication(): Promise<void> {
+    //isStorageReady is a typeguard.  Ensures storage object is not null as well as storage.root is a component
     isStorageReady(this.storage);
-
+    //vuelogger returns a vue state object with a unique key stored at mount key
     this.storage.vue = vueLogger(
       this._config.vue as Vue.Version,
       this.storage.root,
@@ -111,8 +112,9 @@ export default class Factory {
     //adds root
     this.queue.enqueue(this.storage.root);
 
+    //stays looping until queue is empty - pops one off as current component, parses it.  looks for children components
     while (!this.queue.isEmpty()) {
-      //stays looping until queue is empty - pops one off as current component, parses it.  looks for children components
+
       const current = this.queue.dequeue() as Component;
       await current.parseComponent(this.storage, this.queue, this.variable);
     }
@@ -124,11 +126,12 @@ export default class Factory {
   //entrance for user using this  assigned instance of factory.create and starts the compile process
   //which will create storage - add root to queue, add components to queue, calls parse on first in queue
   public async build(): Promise<Storage> {
+    //createStorage
     await this.createStorage();
     await this.parseApplication();
 
     writeBundle(this.storage);
-   
+
     return this.storage as Storage;
   }
 

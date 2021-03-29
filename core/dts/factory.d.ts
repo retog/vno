@@ -32,12 +32,12 @@ export interface CreateInputs {
 // Factory library
 export interface Config {
   /**
-   * Config interface defines the properties for vno.config.json 
+   * Config interface defines the properties for vno.config.json
    * or the options argument provided to Factory.create()
    */
   entry: string;
   /**
-   * entry defines the path from vno.config.json 
+   * entry defines the path from vno.config.json
    * to the application's Root component
    * (i.e. "./client")
    */

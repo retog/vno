@@ -21,12 +21,14 @@ export const template: Parser = function template(curr) {
 
 export const script: Parser = async function (curr, storage, queue) {
   let script = curr.script_data.content;
+
   // prevent to cut urls like http://, https://, ftp:// or file://
   const scriptArr: string[] = script
     .split("\n")
     .map((line: string) => {
       const comment = line.indexOf("//");
       if (comment !== -1) {
+        //if a // is found, ensure its not a url pattern before removing it
         if (!line.match(patterns.url)) {
           return line.slice(0, comment);
         }

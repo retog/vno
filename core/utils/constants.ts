@@ -32,6 +32,14 @@ export const lintignore = `/* eslint-disable */
 `;
 
 // reoccuring patterns
+//URL
+//g=global search==> returns an array of all that the pattern matches
+//parenthesis means starting a capturegroup inside parens find any patterns matching this and definitelyfind"://"
+//"/w"
+//"+" includes stuff after it
+//find :
+//websites to test regex pattern
+//"\s" find white space {2,} at least 2 spaces as white spaces
 export const patterns: Record<string, RegExp> = {
   multilineComment: /\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\//gm,
   htmlComment: /<!--([\s\S]*?)-->/gm,
