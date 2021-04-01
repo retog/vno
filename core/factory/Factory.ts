@@ -117,6 +117,16 @@ export default class Factory {
       await current.parseComponent(this.storage, this.queue, this.variable);
     }
   }
+  public writeCSS(): void {
+    const decoder = new TextDecoder('utf-8');
+
+    const styles = decoder.decode( Deno.readFileSync('../vno/vno-build/style.css'));
+ 
+    Deno.writeTextFileSync("vno-build/style.js", 'const styles = '+`\`<style>${styles}</style>\``+'\n export default styles', {
+      append:true
+    });
+  }
+
   /**
    * build is the entry to initiating bundle
    */
@@ -129,7 +139,7 @@ export default class Factory {
     await this.parseApplication();
 
     writeBundle(this.storage);
-
+    this.writeCSS();
     return this.storage as Storage;
   }
 

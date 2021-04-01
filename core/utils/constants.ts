@@ -23,6 +23,7 @@ export const VnoPath: Record<string, string> = {
   Dir: "vno-build",
   Build: "vno-build/build.js",
   Style: "vno-build/style.css",
+  StyleJS: "vno-build/style.js",
 };
 
 // ignore linting in build

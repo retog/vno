@@ -9,6 +9,10 @@ export function writeBundle(storage: Storage): void {
   if (fs.existsSync(VnoPath.Style)) {
     Deno.removeSync(VnoPath.Style);
   }
+  
+  if (fs.existsSync(VnoPath.StyleJS)) {
+    Deno.removeSync(VnoPath.StyleJS);
+  }
 
   Deno.writeTextFileSync(
     VnoPath.Build,
