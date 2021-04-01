@@ -39,5 +39,5 @@ export const cmnd = {
   quiet: /quiet/i,
   help: /--help/i,
   info: /--info/i,
-  buildSsr: /--ssr/i, //need to figure out how to manage white space/deno index
+  buildSsr: /--ssr/i, 
 };

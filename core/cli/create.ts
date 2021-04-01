@@ -46,9 +46,7 @@ export const createApplication = async function (obj: CreateProjectObj) {
   await Deno.writeTextFile(out.vnoconfig, config);
   await fs.ensureFile(rootFile);
   await Deno.writeTextFile(rootFile, root);
-  /*if (obj.ssr){
-  await fs.ensureFile(out.serverTs);
-  await Deno.writeTextFile(out.serverTs, ??) NEEDS SECOND ARG*/
+ 
   componentFiles.forEach(async (filename: string, i: number) => {
     await fs.ensureFile(filename);
     if (i === 0) await Deno.writeTextFile(filename, component);
