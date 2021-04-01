@@ -46,7 +46,7 @@ export const build = async function (args: string[]): Promise<void> {
   console.log(args[0]);
   if (cmnd.build.test(args[0]) && cmnd.buildSsr.test(args[1])) {
     await Deno.writeTextFile(serverts, "BRIAN I CAN SEE YOU");
-
+    console.log(serverts)
     //configPAth is cwd/filename (with extention because ts)
     const configPath = `${Deno.cwd()}/${vnoconfig}`;
     // Deno.readTextFile returns entire contents of configFile as a string
