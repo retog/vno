@@ -15,7 +15,6 @@ const write = { name: "write" } as const;
 const resRead = await Deno.permissions.request(read);
 const resWrite = await Deno.permissions.request(write);
 
-
 //testing to see the command in the command line
 if (resRead && resWrite) {
   if (cmnd.create.test(command)) await create(args);

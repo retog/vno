@@ -8,7 +8,6 @@ import Component from "./Component.ts";
 import Storage from "./Storage.ts";
 import Queue from "./Queue.ts";
 
-
 //
 
 /**
@@ -57,11 +56,10 @@ export default class Factory {
    * then assigns the data to the Factory's props
    */
   public async assignConfig(): Promise<void> {
-
-    //line below returns a "vno.config" config file to this.config, throws err if no config file is found
-    if (!checkOptions(this.config)) {
+    //line below returns a "vno.config" config file to this._config, throws err if no config file is found
+    if (!checkOptions(this.config)) { //check if config obj is not null, & config.entry & config.root equal "string"
       this._config = await configReader() as Config;
-    }// "config.options?.port" is an example of optional chaining with the safe navigation operator ".?"
+    } // "config.options?.port" is an example of optional chaining with the safe navigation operator ".?"
     if (this.config.options?.port) {
       this._port = this.config.options.port;
     }
@@ -69,7 +67,9 @@ export default class Factory {
       this._hostname = this.config.options.hostname;
     }
     if (this.config.server) {
+      console.log("pre mutation .config server", this.config.server);
       this._server = this.config.server;
+      console.log("server post mutation", this._server);
     }
   }
   /**
@@ -84,7 +84,6 @@ export default class Factory {
       //iterates through entry looking for files with .vue extensions
       const file of fs.walk(`${this.config?.entry}`, { exts: ["vue"] })
     ) {
-
       const label = path.parse(file.path).name;
       //Component is assigned a "filename": `${this.label}.vue`
       const component = new Component(label, file.path);
@@ -114,7 +113,6 @@ export default class Factory {
 
     //stays looping until queue is empty - pops one off as current component, parses it.  looks for children components
     while (!this.queue.isEmpty()) {
-
       const current = this.queue.dequeue() as Component;
       await current.parseComponent(this.storage, this.queue, this.variable);
     }

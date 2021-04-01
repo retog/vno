@@ -5,19 +5,18 @@ import { fs, path } from "../utils/deps.ts";
 import { createApplication } from "./create.ts";
 import { runDevServer } from "./dev.ts";
 import { quietArg } from "./fns.ts";
-import { cmnd } from "./constants.ts";
-
+import { cmnd, serverts, vnoconfig } from "./constants.ts";
+import { Config } from "../dts/factory.d.ts";
 
 //Contains Create, Build, Run, and flag commands
 
-
 export const create = async function (args: string[]): Promise<void> {
-  
   //.test is method on regex pattern - it returns true/false based on if args[0] is 'create' if no 'create', return
   if (!cmnd.create.test(args[0])) return;
+  //if "--ssr" was entered after vno create, set ssr boolean to true
+  //let ssr = (cmnd.createSsr.test(args[0])) ? true : false;
 
-
-  //await statement on install/vno.ts is why we have all this information at the time of run    
+  //await statement on install/vno.ts is why we have all this information at the time of run
   //pops off each arg of the array to give title, root, port, components
   const mutable = args.slice(1);
   const title = mutable.shift();
@@ -31,19 +30,46 @@ export const create = async function (args: string[]): Promise<void> {
     Deno.chdir(dir);
   }
   //arguments passed into CLI placed into createApplication as obj
-  await createApplication({ title, root, port, components });
+  await createApplication({
+    title,
+    root,
+    port,
+    components,
+    //ssr,
+  });
   return;
 };
 
 //The Promise<void> syntax means the promise will resolve to undefined
 export const build = async function (args: string[]): Promise<void> {
-//if nothing placed into CLI, return, zero index is the command build
+  //if nothing placed into CLI, return, zero index is the command build
   if (!cmnd.build.test(args[0])) return;
 
-  const path = args[1];
+  console.log(args[0]);
+  if (cmnd.build.test(args[0]) && cmnd.buildSsr.test(args[1])) {
+    await Deno.writeTextFile(serverts, "BRIAN I CAN SEE YOU");
+
+    //configPAth is cwd/filename (with extention because ts)
+    const configPath = `${Deno.cwd()}/${vnoconfig}`;
+    // Deno.readTextFile returns entire contents of configFile as a string
+    const json = await Deno.readTextFile(configPath);
+    //the returned string from  Deno.readTextFile is converted into object of type Config
+    const res = JSON.parse(json) as Config;
+    res.server = `${Deno.cwd()}/${serverts}`;
+    await Deno.writeTextFile(configPath, JSON.stringify(res));
+    // server?: string;
+    /**
+   * path to application server for running vno run server
+   */
+    //checkVueVersion will instantiate const config to res and turn the Vue version to 2 (if not already)
+    console.log(res);
+    //obj deconstruct json, change server to ssr server location if ssr is true??
+  }
+  //if args index 2 is not --ssr
+  const path = (!cmnd.buildSsr.test(args[1])) ? args[1] : undefined;
   if (path) {
     const dir = `${Deno.cwd()}/${path}`;
-    //tests if the given directory exists, chdir changes the CWD to the specified path 
+    //tests if the given directory exists, chdir changes the CWD to the specified path
     if (await fs.exists(dir)) Deno.chdir(dir);
   }
 
@@ -57,7 +83,6 @@ export const build = async function (args: string[]): Promise<void> {
 };
 
 export const run = async function (args: string[]): Promise<void> {
-
   if (!cmnd.run.test(args[0])) return;
 
   const vno = Factory.create();

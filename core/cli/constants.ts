@@ -10,6 +10,7 @@ export const pub = "public";
 export const components = "components";
 export const indexhtml = `${pub}/index.html`;
 export const vnoconfig = "vno.config.json";
+export const serverts = "server.ts";
 
 //options is object of type CreateInputs<--interface
 export const options: CreateInputs = {
@@ -38,4 +39,5 @@ export const cmnd = {
   quiet: /quiet/i,
   help: /--help/i,
   info: /--info/i,
+  buildSsr: /--ssr/i, //need to figure out how to manage white space/deno index
 };
