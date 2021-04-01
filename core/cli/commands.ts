@@ -14,7 +14,6 @@ export const create = async function (args: string[]): Promise<void> {
   //.test is method on regex pattern - it returns true/false based on if args[0] is 'create' if no 'create', return
   if (!cmnd.create.test(args[0])) return;
 
-
   //await statement on install/vno.ts is why we have all this information at the time of run
   //pops off each arg of the array to give title, root, port, components
   const mutable = args.slice(1);
@@ -56,8 +55,6 @@ export const build = async function (args: string[]): Promise<void> {
     const res = JSON.parse(json) as Config;
     res.server = `${Deno.cwd()}/${serverts}`;
     await Deno.writeTextFile(configPath, JSON.stringify(res));
-  
-    
   }
   //if args index 2 is not --ssr
   const path = (!cmnd.buildSsr.test(args[1])) ? args[1] : undefined;
