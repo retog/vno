@@ -38,13 +38,14 @@ export const create = async function (args: string[]): Promise<void> {
   });
   return;
 };
-
+export let ssr = false
 //The Promise<void> syntax means the promise will resolve to undefined
 export const build = async function (args: string[]): Promise<void> {
   //if nothing placed into CLI, return, zero index is the command build
   if (!cmnd.build.test(args[0])) return;
 
   if (cmnd.buildSsr.test(args[1])) {
+    ssr = true;
     await Deno.writeTextFile(serverTs, ssrTemplate);
     //configPAth is cwd/filename (with extention because ts)
     const configPath = `${Deno.cwd()}/${vnoconfig}`;

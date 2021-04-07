@@ -52,5 +52,5 @@ const component = Vue.component('what', {
   });
 
 
-
+  App.$mount("#app")
 export default App

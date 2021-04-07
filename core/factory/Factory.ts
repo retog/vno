@@ -126,7 +126,7 @@ export default class Factory {
     );
 
     Deno.writeTextFileSync(
-      "vno-build/style.js",
+      "vno-ssr/style.js",
       "const styles = " + `\`<style>${styles}</style>\`` +
         "\n export default styles",
       {
@@ -142,14 +142,12 @@ export default class Factory {
   //entrance for user using this  assigned instance of factory.create and starts the compile process
   //which will create storage - add root to queue, add components to queue, calls parse on first in queue
   public async build(): Promise<Storage> {
-    //createStorage
+    
     await this.createStorage();
     await this.parseApplication();
-
     writeBundle(this.storage);
     this.writeCSS();
-    //import
-    Deno.writeTextFile(serverTs, ssrTemplate);
+
     return this.storage as Storage;
   }
 
