@@ -5,9 +5,9 @@ import { fs, path } from "../utils/deps.ts";
 import { createApplication } from "./create.ts";
 import { runDevServer } from "./dev.ts";
 import { quietArg } from "./fns.ts";
-import { cmnd, serverts, vnoconfig } from "./constants.ts";
+import { cmnd, serverTs, vnoconfig } from "./constants.ts";
 import { Config } from "../dts/factory.d.ts";
-import { ssRTemplate } from "../cli/templates.ts";
+import { ssrTemplate } from "../cli/templates.ts";
 
 //Contains Create, Build, Run, and flag commands
 
@@ -45,14 +45,14 @@ export const build = async function (args: string[]): Promise<void> {
   if (!cmnd.build.test(args[0])) return;
 
   if (cmnd.buildSsr.test(args[1])) {
-    await Deno.writeTextFile(serverts, ssRTemplate);
+    await Deno.writeTextFile(serverTs, ssrTemplate);
     //configPAth is cwd/filename (with extention because ts)
     const configPath = `${Deno.cwd()}/${vnoconfig}`;
     // Deno.readTextFile returns entire contents of configFile as a string
     const json = await Deno.readTextFile(configPath);
     //the returned string from  Deno.readTextFile is converted into object of type Config
     const res = JSON.parse(json) as Config;
-    res.server = `${Deno.cwd()}/${serverts}`;
+    res.server = `${Deno.cwd()}/${serverTs}`;
     await Deno.writeTextFile(configPath, JSON.stringify(res));
   }
 
@@ -71,7 +71,6 @@ export const build = async function (args: string[]): Promise<void> {
   if (quietArg(args[1]) || quietArg(args[2])) print.QUIET(); //"Vno build complete"
   //ASCII function prints the logo if quiet is passed as an arg
   else print.ASCII();
-  //
 };
 
 export const run = async function (args: string[]): Promise<void> {

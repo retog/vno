@@ -7,8 +7,8 @@ import { Config, Vue } from "../dts/factory.d.ts";
 import Component from "./Component.ts";
 import Storage from "./Storage.ts";
 import Queue from "./Queue.ts";
-import { ssRTemplate } from "../cli/templates.ts";
-import { serverts } from "../cli/constants.ts";
+import { ssrTemplate } from "../cli/templates.ts";
+import { serverTs } from "../cli/constants.ts";
 //
 
 /**
@@ -149,7 +149,7 @@ export default class Factory {
     writeBundle(this.storage);
     this.writeCSS();
     //import
-    Deno.writeTextFile(serverts, ssRTemplate);
+    Deno.writeTextFile(serverTs, ssrTemplate);
     return this.storage as Storage;
   }
 

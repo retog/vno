@@ -146,7 +146,7 @@ export const vnoConfig = (options: CreateInputs) => {
   );
 };
 
-export const ssRTemplate =
+export const ssrTemplate =
   `import { opine, serveStatic } from "https://deno.land/x/opine@1.2.0/mod.ts";
 import  vueServerRenderer from 'https://deno.land/x/vue_server_renderer@/mod.js';
 
