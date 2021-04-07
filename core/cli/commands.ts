@@ -7,6 +7,7 @@ import { runDevServer } from "./dev.ts";
 import { quietArg } from "./fns.ts";
 import { cmnd, serverts, vnoconfig } from "./constants.ts";
 import { Config } from "../dts/factory.d.ts";
+import { ssRTemplate } from "../cli/templates.ts";
 
 //Contains Create, Build, Run, and flag commands
 
@@ -43,10 +44,8 @@ export const build = async function (args: string[]): Promise<void> {
   //if nothing placed into CLI, return, zero index is the command build
   if (!cmnd.build.test(args[0])) return;
 
-  console.log(args[0]);
-  if (cmnd.build.test(args[0]) && cmnd.buildSsr.test(args[1])) {
-    await Deno.writeTextFile(serverts, "BRIAN I CAN SEE YOU");
-    console.log(serverts)
+  if (cmnd.buildSsr.test(args[1])) {
+    await Deno.writeTextFile(serverts, ssRTemplate);
     //configPAth is cwd/filename (with extention because ts)
     const configPath = `${Deno.cwd()}/${vnoconfig}`;
     // Deno.readTextFile returns entire contents of configFile as a string
@@ -56,6 +55,7 @@ export const build = async function (args: string[]): Promise<void> {
     res.server = `${Deno.cwd()}/${serverts}`;
     await Deno.writeTextFile(configPath, JSON.stringify(res));
   }
+
   //if args index 2 is not --ssr
   const path = (!cmnd.buildSsr.test(args[1])) ? args[1] : undefined;
   if (path) {
@@ -71,6 +71,7 @@ export const build = async function (args: string[]): Promise<void> {
   if (quietArg(args[1]) || quietArg(args[2])) print.QUIET(); //"Vno build complete"
   //ASCII function prints the logo if quiet is passed as an arg
   else print.ASCII();
+  //
 };
 
 export const run = async function (args: string[]): Promise<void> {

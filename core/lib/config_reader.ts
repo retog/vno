@@ -33,11 +33,11 @@ path.parse object
     //checkVueVersion will instantiate const config to res and turn the Vue version to 2 (if not already)
     const config = checkVueVersion(res) ? res : { ...res as Config, vue: 2 };
     //obj deconstruct json, change server to ssr server location if ssr is true??
-    console.log(config);
+    //console.log(config);
     return config as Config;
   } else {
     throw new Error(
-      "vno requires a config file or options argument for Factory class",
+      "Vno requires a config file or options argument for Factory class",
     );
   }
 }
