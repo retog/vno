@@ -7,7 +7,8 @@ import { Config, Vue } from "../dts/factory.d.ts";
 import Component from "./Component.ts";
 import Storage from "./Storage.ts";
 import Queue from "./Queue.ts";
-
+import { ssrTemplate } from "../cli/templates.ts";
+import { serverTs } from "../cli/constants.ts";
 //
 
 /**
@@ -67,9 +68,9 @@ export default class Factory {
       this._hostname = this.config.options.hostname;
     }
     if (this.config.server) {
-      console.log("pre mutation .config server", this.config.server);
+      //console.log("pre mutation .config server", this.config.server);
       this._server = this.config.server;
-      console.log("server post mutation", this._server);
+      //console.log("server post mutation", this._server);
     }
   }
   /**
@@ -118,13 +119,20 @@ export default class Factory {
     }
   }
   public writeCSS(): void {
-    const decoder = new TextDecoder('utf-8');
+    const decoder = new TextDecoder("utf-8");
 
-    const styles = decoder.decode( Deno.readFileSync('../vno/vno-build/style.css'));
- 
-    Deno.writeTextFileSync("vno-build/style.js", 'const styles = '+`\`<style>${styles}</style>\``+'\n export default styles', {
-      append:true
-    });
+    const styles = decoder.decode(
+      Deno.readFileSync("../vno/vno-build/style.css"),
+    );
+
+    Deno.writeTextFileSync(
+      "vno-build/style.js",
+      "const styles = " + `\`<style>${styles}</style>\`` +
+        "\n export default styles",
+      {
+        append: true,
+      },
+    );
   }
 
   /**
@@ -140,6 +148,8 @@ export default class Factory {
 
     writeBundle(this.storage);
     this.writeCSS();
+    //import
+    Deno.writeTextFile(serverTs, ssrTemplate);
     return this.storage as Storage;
   }
 
