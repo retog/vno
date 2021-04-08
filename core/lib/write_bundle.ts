@@ -5,7 +5,8 @@ import { fs } from "../utils/deps.ts";
 
 export function writeBundle(storage: Storage): void {
   fs.ensureDirSync(VnoPath.Dir);
-
+  fs.ensureDirSync(VnoPath.DirSSR)
+  
   if (fs.existsSync(VnoPath.Style)) {
     Deno.removeSync(VnoPath.Style);
   }
@@ -13,18 +14,28 @@ export function writeBundle(storage: Storage): void {
   if (fs.existsSync(VnoPath.StyleJS)) {
     Deno.removeSync(VnoPath.StyleJS);
   }
-
+ //"vno-build/build.js" ->  dep: "import Vue from ", -> 
+  
   Deno.writeTextFileSync(
     VnoPath.Build,
     lintignore + `${storage.vue.dep}"${storage.vue.cdn}";\n`,
   );
-
+//vno-ssr/build.js
+  Deno.writeTextFileSync(
+    VnoPath.BuildSSR,
+    lintignore + `${storage.vue.dep}"https://deno.land/x/vue_js@/mod.js";\n`,
+  );
+  
   postorderTraverse(storage.root);
   if (storage.vue.state === 3) {
     preorderTraverse(storage.root);
   }
 
   Deno.writeTextFileSync(VnoPath.Build, storage.vue.mount, {
+    append: true,
+  });
+  
+  Deno.writeTextFileSync(VnoPath.BuildSSR, 'export default '+ storage.root.label, {
     append: true,
   });
 }
@@ -44,6 +55,9 @@ function postorderTraverse(current: Component): void {
     Deno.writeTextFileSync(VnoPath.Build, current.instance, {
       append: true,
     });
+    Deno.writeTextFileSync(VnoPath.BuildSSR, current.instance, {
+      append: true,
+    });
   }
 
   if (current.styles) {
@@ -56,6 +70,9 @@ function postorderTraverse(current: Component): void {
 function preorderTraverse(current: Component): void {
   if (current.registration) {
     Deno.writeTextFileSync(VnoPath.Build, current.registration, {
+      append: true,
+    });
+    Deno.writeTextFileSync(VnoPath.BuildSSR, current.registration, {
       append: true,
     });
   }
