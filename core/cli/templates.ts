@@ -156,6 +156,7 @@ import  styles  from './vno-ssr/style.js'
 
 const port = 3000
 const app = opine();
+app.use(serveStatic('vno-build'));
 const __dirname = dirname(import.meta.url);
 
 app.use("/", (req, res, next) => {
@@ -174,6 +175,7 @@ app.use("/", (req, res, next) => {
          </head>
          <body>
            <div id="root">\${rendered}</div>
+           <script type="module" src="./build.js"></script>
          </body>
        </html>\`;
 
