@@ -175,6 +175,7 @@ app.use("/", (req, res, next) => {
          </head>
          <body>
            <div id="root">\${rendered}</div>
+           <script type="module" src="./build.js"></script>
          </body>
        </html>\`;
 
