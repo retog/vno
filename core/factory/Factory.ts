@@ -120,9 +120,9 @@ export default class Factory {
   }
   public writeCSS(): void {
     const decoder = new TextDecoder("utf-8");
-
+    console.log(Deno.cwd())
     const styles = decoder.decode(
-      Deno.readFileSync("../vno/vno-build/style.css"),
+      Deno.readFileSync(Deno.cwd()+"/vno-build/style.css"),
     );
 
     Deno.writeTextFileSync(

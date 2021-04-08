@@ -5,7 +5,8 @@ import { fs } from "../utils/deps.ts";
 
 export function writeBundle(storage: Storage): void {
   fs.ensureDirSync(VnoPath.Dir);
-
+  fs.ensureDirSync(VnoPath.DirSSR)
+  
   if (fs.existsSync(VnoPath.Style)) {
     Deno.removeSync(VnoPath.Style);
   }
