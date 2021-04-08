@@ -150,9 +150,9 @@ export const ssrTemplate =
   `import { opine, serveStatic } from "https://deno.land/x/opine@1.2.0/mod.ts";
 import  vueServerRenderer from 'https://deno.land/x/vue_server_renderer@/mod.js';
 
-import App from './vendor/component.js';
+import App from './vno-ssr/build.js';
 import { join, dirname} from "https://deno.land/std@0.63.0/path/mod.ts";
-import  styles  from './vno-build/style.js'
+import  styles  from './vno-ssr/style.js'
 
 const port = 3000
 const app = opine();

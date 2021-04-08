@@ -34,7 +34,8 @@ export function writeBundle(storage: Storage): void {
   Deno.writeTextFileSync(VnoPath.Build, storage.vue.mount, {
     append: true,
   });
-  Deno.writeTextFileSync(VnoPath.BuildSSR, 'export default App', {
+  console.log(storage.root)
+  Deno.writeTextFileSync(VnoPath.BuildSSR, 'export default '+ storage.root.label, {
     append: true,
   });
 }
