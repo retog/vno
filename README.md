@@ -136,6 +136,21 @@ deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/v
 
 **It is important to know that as of now, scoped styling is not supported**
 
+### run a build on a project AND create a server configured for SSR
+
+- To invoke the build method and dynamically create bundled js, css files, and a server.ts for server side rendering your application, type the following into the terminal:
+
+```
+vno build --ssr
+```
+_OR_
+
+```
+deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/vno/install/vno.ts build --ssr
+```
+
+![vno build --ssr](https://ibb.co/gyw8Snf)
+
 ### run a simple dev server
 
 - Running the dev server dynamically runs a new build and runs the application
