@@ -1,6 +1,7 @@
 import Factory from "../factory/Factory.ts";
 import * as print from "./stdout.ts";
 import info from "./info.ts";
+import * as fn from "./fns.ts";
 import { fs, path } from "../utils/deps.ts";
 import { createApplication } from "./create.ts";
 import { runDevServer } from "./dev.ts";
@@ -8,21 +9,18 @@ import { quietArg } from "./fns.ts";
 import { cmnd, serverTs, vnoconfig } from "./constants.ts";
 import { Config } from "../dts/factory.d.ts";
 import { ssrTemplate } from "../cli/templates.ts";
-import {existsSync } from "https://deno.land/std/fs/mod.ts"
-
+import { existsSync } from "https://deno.land/std/fs/mod.ts"
 //Contains Create, Build, Run, and flag commands
-
 export const create = async function (args: string[]): Promise<void> {
   //.test is method on regex pattern - it returns true/false based on if args[0] is 'create' if no 'create', return
   if (!cmnd.create.test(args[0])) return;
-  console.log(args)
 
   //await statement on install/vno.ts is why we have all this information at the time of run
   //pops off each arg of the array to give title, root, port, components
-  const mutable = args.slice(1) //as []of strings;
+  const mutable =  args.slice(1)
   
-  const title = (mutable[0].trim() === "") ? undefined : mutable.shift();
-  const root = (mutable[1].trim() === "") ? undefined : mutable.shift();
+  const title = mutable.shift();
+  const root = mutable.shift();
   const port = mutable.shift();
   const components = mutable.length > 0 ? mutable : undefined;
 
@@ -37,11 +35,7 @@ export const create = async function (args: string[]): Promise<void> {
     root,
     port,
     components,
-    //ssr,
   });
-  //////
-  console.log(mutable)
-  //////
   return;
 };
 //The Promise<void> syntax means the promise will resolve to undefined
@@ -53,7 +47,8 @@ export const build = async function (args: string[]): Promise<void> {
     //If server.ts files exists, do not write over it
     const isServerTsExist: boolean = existsSync(`${Deno.cwd()}/${serverTs}`);
     (!isServerTsExist) ? await Deno.writeTextFile(serverTs, ssrTemplate)
-      : console.log(`You current have a ${serverTs} file located: ${Deno.cwd()}`)
+      : fn.green(`[${serverTs} file located]`);
+    fn.yellow(`=> ${Deno.cwd()}`);
 
 
     //configPAth is cwd/filename (with extention because ts)
