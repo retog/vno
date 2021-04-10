@@ -38,6 +38,21 @@ export const create = async function (args: string[]): Promise<void> {
   });
   return;
 };
+
+
+// export const dev = async function(args: string[]): Promise<void> {
+//  if(!cmnd.dev.test(args[0])) return;
+ 
+//     //create argument for these strings and import? 
+//  exec('denon run -A --unstable --allow-read --allow-run server.ts')
+//  exec('denon run --allow-read --allow-run ./core/dev/denor.ts')
+
+// }
+
+
+
+
+
 export let ssr = false
 //The Promise<void> syntax means the promise will resolve to undefined
 export const build = async function (args: string[]): Promise<void> {
