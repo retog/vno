@@ -25,7 +25,7 @@ async function watchAndRebuild(options: watchOptions) {
   console.log("Watching for changes.");
   await watchChanges(".", async () => {
     console.log("File change detected.");
-    // Update the vno link to deno 3rd party link when all work is complete and uploaded.
+    // TODO: Update the vno link to deno 3rd party link when all work is complete and uploaded.
     await exec(
       `deno run --allow-read --allow-write --allow-net --unstable ./install/vno.ts build${ssrFlag}`,
     );
