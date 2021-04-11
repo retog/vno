@@ -5,8 +5,9 @@ async function main() {
   console.log("Watching for file changes.");
   await watcher.watchChanges(".", async () => {
     console.log("File change detected.");
+    // Update the vno link to deno 3rd party link when all work is complete
     await exec(
-      "deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/vno/install/vno.ts build"
+      "deno run --allow-read --allow-write --allow-net --unstable https://raw.githubusercontent.com/oslabs-beta/vno/reloading/install/vno.ts build --ssr",
     );
   });
 }
