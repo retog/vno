@@ -1,4 +1,4 @@
-import * as watcher from "./src/watcher.ts";
+// import * as watcher from "./src/watcher.ts";
 import { exec } from "https://deno.land/x/exec/mod.ts";
 //live reloading watching all files components for changes and will automatically run exec() code once there are changes
 
@@ -16,10 +16,25 @@ import { exec } from "https://deno.land/x/exec/mod.ts";
 // // hello world!
 // emitter.emit("SayHello", ", again, world");
 // hello, again, world!
+async function watchChanges(
+  path: string,
+  onChange: Function,
+) {
+  const watcher = Deno.watchFs(path);
+  //watches a path which (currently not given specific path)
+  for await (const event of watcher) {
+    console.log(event);
+    if (event.kind === "modify") {
+      await onChange();
+      return;
+    }
+    return;
+  }
+}
 
 async function main() {
   console.log("Watching for file changes.");
-  await watcher.watchChanges(".", async () => {
+  await watchChanges(".", async () => {
     console.log("File change detected.");
     console.log("updated denor");
     // Update the vno link to deno 3rd party link when all work is complete
