@@ -2,6 +2,8 @@ import { Application, path, send } from "../utils/deps.ts";
 import * as print from "./stdout.ts";
 import { exec } from "https://deno.land/x/exec/mod.ts";
 
+import { watchAndRebuild } from "./liveRebuild.ts";
+
 export const server: Application = new Application();
 
 export const runDevServer = async function (port: number, hostname: string) {
@@ -27,6 +29,7 @@ export const runDevServer = async function (port: number, hostname: string) {
       });
     } else await next();
   });
+  //, server.use(watchAndRebuild);
 
   // server error handling
   server.addEventListener("error", (e: unknown) => console.error(e));
@@ -36,9 +39,12 @@ export const runDevServer = async function (port: number, hostname: string) {
     print.LISTEN(port, hostname);
     if (running === false) {
       console.log("await here");
-      await exec(
-        `deno run --allow-read --allow-run --allow-write --allow-net --unstable ./core/cli/liveRebuild.ts`,
-      );
+
+      // await exec(
+      //   `deno run --allow-read --allow-run --allow-write --allow-net --unstable ./core/cli/liveRebuild.ts`,
+      // );
+      watchAndRebuild({ ssr: false });
+
       running = true;
     }
   });
