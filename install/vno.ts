@@ -10,7 +10,7 @@ if (cmnd.help.test(command) || cmnd.info.test(command)) flags(args);
 // ensure permissions
 const read = { name: "read" } as const;
 const write = { name: "write" } as const;
-// const run = { name: "run" } as const;
+const runn = { name: "run" } as const;
 
 // permission requests
 const resRead = await Deno.permissions.request(read);
@@ -20,7 +20,9 @@ const resWrite = await Deno.permissions.request(write);
 if (resRead && resWrite) {
   if (cmnd.create.test(command)) await create(args);
   if (cmnd.build.test(command)) await build(args);
-  if (cmnd.run.test(command)) await run(args);
+  if (cmnd.run.test(command)) {
+    const resRun = await Deno.permissions.request(runn)
+    if (resRun) await run(args);}
 }  
 //   if (cmnd.dev.test(command)) {
 //     const resRun = await Deno.permissions.request(run);

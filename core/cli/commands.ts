@@ -9,6 +9,9 @@ import { cmnd, serverTs, vnoconfig } from "./constants.ts";
 import { Config } from "../dts/factory.d.ts";
 import { ssrTemplate } from "../cli/templates.ts";
 
+
+import { exec } from "https://deno.land/x/exec/mod.ts";
+
 //Contains Create, Build, Run, and flag commands
 
 export const create = async function (args: string[]): Promise<void> {
@@ -101,6 +104,10 @@ export const run = async function (args: string[]): Promise<void> {
 
   if (cmnd.dev.test(args[1])) {
     await runDevServer(port, hostname);
+    console.log("await")
+    await exec(
+      `deno run --allow-read --allow-run --allow-write --allow-net --unstable ./core/cli/liveRebuild.ts`,
+    );
     Deno.exit(0);
   } else if (cmnd.server.test(args[1])) {
     if (vno.server == null) return;
