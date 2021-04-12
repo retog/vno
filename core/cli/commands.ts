@@ -104,10 +104,10 @@ export const run = async function (args: string[]): Promise<void> {
 
   if (cmnd.dev.test(args[1])) {
     await runDevServer(port, hostname);
-    console.log("await")
-    await exec(
-      `deno run --allow-read --allow-run --allow-write --allow-net --unstable ./core/cli/liveRebuild.ts`,
-    );
+    // console.log("await")
+    // await exec(
+    //   `deno run --allow-read --allow-run --allow-write --allow-net --unstable ./core/cli/liveRebuild.ts`,
+    // );
     Deno.exit(0);
   } else if (cmnd.server.test(args[1])) {
     if (vno.server == null) return;

@@ -1,5 +1,6 @@
 import { Application, path, send } from "../utils/deps.ts";
 import * as print from "./stdout.ts";
+import { exec } from "https://deno.land/x/exec/mod.ts";
 
 export const server: Application = new Application();
 
@@ -30,7 +31,17 @@ export const runDevServer = async function (port: number, hostname: string) {
   // server error handling
   server.addEventListener("error", (e: unknown) => console.error(e));
   // listen for active server
-  server.addEventListener("listen", () => print.LISTEN(port, hostname));
+  let running = false;
+  server.addEventListener("listen", async () => {
+    print.LISTEN(port, hostname);
+    if (running === false) {
+      console.log("await here");
+      await exec(
+        `deno run --allow-read --allow-run --allow-write --allow-net --unstable ./core/cli/liveRebuild.ts`,
+      );
+      running = true;
+    }
+  });
   await server.listen({ port, hostname });
 
   return server;
