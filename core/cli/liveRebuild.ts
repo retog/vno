@@ -29,6 +29,11 @@ async function watchAndRebuild(options: watchOptions) {
     await exec(
       `deno run --allow-read --allow-write --allow-net --unstable https://raw.githubusercontent.com/oslabs-beta/vno/reloading/install/vno.ts build${ssrFlag}`,
     );
+    // this is all part of microtask queue. which means this will be pushed onto callstack after.
+    // if we had await in front of it then: this callback should not be garbage collected until
+    // its all resolved. but because its recursive then will always stay in microtask queue, since the
+    // function calls itself again. in this case, since we do NOT have an await keyword,
+    // it doesn't matter here because nothing else after line 33 suspend the callback untill this resumes
     watchAndRebuild(options);
   });
 }
