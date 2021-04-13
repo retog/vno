@@ -1,4 +1,4 @@
-import { exec } from "https://deno.land/x/exec/mod.ts";
+import { exec } from "../utils/deps.ts";
 
 async function watchChanges(
   path: string,
@@ -29,12 +29,7 @@ async function watchAndRebuild(options: watchOptions) {
     await exec(
       `deno run --allow-read --allow-write --allow-net --unstable ./install/vno.ts build${ssrFlag}`,
     );
-    // await exec(
-    //   `deno run --allow-read --allow-run --allow-write --allow-net --unstable ./core/cli/liveRebuild.ts`,
-    // );
-    watchAndRebuild({ ssr: false });
+    watchAndRebuild(options);
   });
 }
-
-//watchAndRebuild({ ssr: false });
 export { watchAndRebuild };

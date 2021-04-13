@@ -21,7 +21,8 @@ export { superoak } from "https://deno.land/x/superoak@4.0.0/mod.ts";
 // third-party
 import _ from "https://cdn.skypack.dev/lodash"; // lodash
 import ProgressBar from "https://deno.land/x/progress@v1.2.3/mod.ts";
-export { _, ProgressBar };
+import { exec } from "https://deno.land/x/exec/mod.ts";
+export { _, exec, ProgressBar };
 
 // compilers
 export { compile as scssCompiler } from "https://raw.githubusercontent.com/crewdevio/deno_sass2/master/mod.ts";
