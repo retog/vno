@@ -2,10 +2,33 @@ import { Application, path, send } from "../utils/deps.ts";
 import * as print from "./stdout.ts";
 import { exec } from "../utils/deps.ts";
 import { watchAndRebuild } from "./liveRebuild.ts";
+import { event } from "../utils/events.ts"
 
+
+
+import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
 export const server: Application = new Application();
+const wss = new WebSocketServer(8080);
 
 export const runDevServer = async function (port: number, hostname: string) {
+  
+   wss.on("connection", function (ws: WebSocketClient) {
+    
+    // create event listeneer that listens for "buildDone" event
+    const reloadWindow = () => {
+      console.log("[back to you Client!]");
+      ws.send('window.location.reload();');
+      event.removeListener("buildDone", reloadWindow);
+    };
+
+    event.on("buildDone", reloadWindow);
+    
+    ws.on("message", function (message: string) {
+      console.log(message);
+    });
+  });
+    
+
   server.use(async (ctx, next) => {
     const { pathname } = ctx.request.url;
 
