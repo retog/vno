@@ -8,6 +8,9 @@ export {
   assertEquals,
   assertNotEquals,
 } from "https://deno.land/std@0.83.0/testing/asserts.ts";
+import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.1/mod.ts";
+export { WebSocketServer };
+export type { WebSocketClient };
 
 // oak
 export {
@@ -21,8 +24,13 @@ export { superoak } from "https://deno.land/x/superoak@4.0.0/mod.ts";
 // third-party
 import _ from "https://cdn.skypack.dev/lodash"; // lodash
 import ProgressBar from "https://deno.land/x/progress@v1.2.3/mod.ts";
-export { _, ProgressBar };
+import { exec } from "https://deno.land/x/exec/mod.ts";
+export { _, exec, ProgressBar };
 
 // compilers
 export { compile as scssCompiler } from "https://raw.githubusercontent.com/crewdevio/deno_sass2/master/mod.ts";
 export * as sfcCompiler from "https://denopkg.com/crewdevio/vue-deno-compiler/mod.ts";
+
+//event emitter for live reload
+import { EventEmitter } from "https://deno.land/std@0.93.0/node/events.ts";
+export { EventEmitter };
