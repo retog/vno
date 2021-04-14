@@ -1,3 +1,3 @@
-import { EventEmitter } from "./deps.ts"
+import { EventEmitter } from "./deps.ts";
 
-export const event = new EventEmitter()
+export const event = new EventEmitter();

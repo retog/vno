@@ -9,7 +9,6 @@ import Storage from "./Storage.ts";
 import Queue from "./Queue.ts";
 import { ssrTemplate } from "../cli/templates.ts";
 import { serverTs } from "../cli/constants.ts";
-//
 
 /**
  * Factory class follows the Singelton design pattern
@@ -120,7 +119,7 @@ export default class Factory {
   }
   public writeCSS(): void {
     const decoder = new TextDecoder("utf-8");
-    
+
     const styles = decoder.decode(
       Deno.readFileSync(Deno.cwd()+"/vno-build/style.css"),
     );
@@ -141,11 +140,12 @@ export default class Factory {
 
   //entrance for user using this  assigned instance of factory.create and starts the compile process
   //which will create storage - add root to queue, add components to queue, calls parse on first in queue
-  public async build(): Promise<Storage> {
-    
+  public async build(isDev?: boolean): Promise<Storage> {
+    // When isDev is true, will insert live reloading client websocket script into build.js for frontend.
+    // Only runDevServer uses this option, so that script should only get inserted during local testing.
     await this.createStorage();
     await this.parseApplication();
-    writeBundle(this.storage);
+    writeBundle(this.storage, isDev);
     this.writeCSS();
 
     return this.storage as Storage;

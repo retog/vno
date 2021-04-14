@@ -1,5 +1,8 @@
 import { exec } from "../utils/deps.ts";
-import { event } from "../utils/events.ts"
+import { event } from "../utils/events.ts";
+import Factory from "../factory/Factory.ts";
+
+const vno = Factory.create();
 
 async function watchChanges(
   path: string,
@@ -27,15 +30,15 @@ async function watchAndRebuild(options: watchOptions) {
   console.log("Watching for changes.");
   await watchChanges(".", async () => {
     console.log("File change detected.");
-    // TODO: Update the vno link to deno 3rd party link when all work is complete and uploaded.
-    await exec(
-      `deno run --allow-read --allow-write --allow-net --unstable https://raw.githubusercontent.com/oslabs-beta/vno/reloading/install/vno.ts build${ssrFlag}`,
-    );
+    // await exec(
+    //   `deno run --allow-read --allow-write --allow-net --unstable https://raw.githubusercontent.com/oslabs-beta/vno/reloading/install/vno.ts build${ssrFlag}`,
+    // );
+    // May not need the above exec function any longer, but keeping it around as a reminder that rebuilding SSR may still
+    // be needed.
+    await vno.build(true);
 
     // emit event called "buildDone" AFTER this build process finishes
-
-   
-   event.emit("buildDone")
+    event.emit("buildDone");
     // this is all part of microtask queue. which means this will be pushed onto callstack after.
     // if we had await in front of it then: this callback should not be garbage collected until
     // its all resolved. but because its recursive then will always stay in microtask queue, since the

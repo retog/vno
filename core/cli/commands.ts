@@ -45,8 +45,8 @@ export const create = async function (args: string[]): Promise<void> {
 
 // export const dev = async function(args: string[]): Promise<void> {
 //  if(!cmnd.dev.test(args[0])) return;
- 
-//     //create argument for these strings and import? 
+
+//     //create argument for these strings and import?
 //  exec('denon run -A --unstable --allow-read --allow-run server.ts')
 //  exec('denon run --allow-read --allow-run ./core/dev/denor.ts')
 
@@ -103,11 +103,10 @@ export const run = async function (args: string[]): Promise<void> {
   const { port, hostname } = vno;
 
   if (cmnd.dev.test(args[1])) {
+    //for live reload
+    await vno.build(true);
     await runDevServer(port, hostname);
-    // console.log("await")
-    // await exec(
-    //   `deno run --allow-read --allow-run --allow-write --allow-net --unstable ./core/cli/liveRebuild.ts`,
-    // );
+
     Deno.exit(0);
   } else if (cmnd.server.test(args[1])) {
     if (vno.server == null) return;
