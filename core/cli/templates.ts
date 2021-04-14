@@ -125,6 +125,7 @@ export const htmlTemplate = (options: CreateInputs) => {
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="./style.css" />
     <title>${options.title}</title>
+
   </head>
   <body>
     <div id="${_.kebabCase(options.root)}">
@@ -160,18 +161,18 @@ app.use(serveStatic('vno-build'));
 const __dirname = dirname(import.meta.url);
 
 app.use("/", (req, res, next) => {
-      
+
       let rendered;
       vueServerRenderer(App, (err:any, res:any) => {
         rendered = res;
       });
-      
+
       const html =
       \`<html>
          <head>
-         
+
             \${styles}
-           
+
          </head>
          <body>
            <div id="root">\${rendered}</div>
@@ -183,7 +184,7 @@ app.use("/", (req, res, next) => {
   });
 
 app.listen({ port });
-  
+
 console.log(\`Vue SSR App listening on port \${port}\`);
 
 ` as string;
