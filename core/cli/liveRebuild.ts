@@ -11,7 +11,7 @@ async function watchChanges(
   const watcher = Deno.watchFs(path);
   //watches a path which (currently not given specific path)
   for await (const event of watcher) {
-    if (event.kind === "modify") {
+    if (/modify|create/.test(event.kind)) {
       await onChange();
       return;
     }
