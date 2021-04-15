@@ -149,7 +149,7 @@ _OR_
 deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/vno/install/vno.ts build --ssr
 ```
 
-![vno build ssr](https://i.ibb.co/dfPZTH6/vno-build-ssr.gif)
+![vno build ssr](https://i.ibb.co/c15qK5J/final-live-gif.gif)
 
 ### run dev server includes live reload
 
