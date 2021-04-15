@@ -169,6 +169,16 @@ deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/v
 
 ![vno run dev](https://i.ibb.co/RckD0Tm/vno-run-dev.gif)
 
+# Live Reload
+
+- Native vno run dev command automatically enables live reload
+- Note: live reload injects a websocket connection to build.js, to remove it use vno run build
+
+```
+vno run dev
+```
+![vno run dev live reload](https://i.ibb.co/hRkRvBv/live-Reload.gif)
+
 # vno as an API
 
 ### initializing your application with the api
