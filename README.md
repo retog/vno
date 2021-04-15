@@ -151,10 +151,12 @@ deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/v
 
 ![vno build ssr](https://i.ibb.co/dfPZTH6/vno-build-ssr.gif)
 
-### run dev server
+### run dev server includes live reload
 
 - Running the dev server dynamically runs a new build and runs the application
   on a module hosted server
+- Native `vno run dev` command automatically enables live reload
+    - Live reload injects a WebSocket connection to build.js. Remove it with: `vno run build`
 - Invoke the dev server like so:
 
 ```
@@ -167,15 +169,7 @@ _OR_
 deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/vno/install/vno.ts run dev
 ```
 
-![vno run dev](https://i.ibb.co/RckD0Tm/vno-run-dev.gif)
-
-# Live Reload
-
-- Native `vno run dev` command automatically enables live reload
-- Live reload injects a WebSocket connection to build.js: to remove it use vno run build
-
-![vno run dev live reload](https://i.ibb.co/hRkRvBv/live-Reload.gif)
-
+![vno run dev & live reload](https://i.ibb.co/c15qK5J/final-live-gif.gif)
 
 # vno as an API
 
