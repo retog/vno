@@ -1,18 +1,34 @@
-import type { Component, Storage } from "../dts/factory.d.ts";
-import { lintignore, VnoPath } from "../utils/constants.ts";
-import { hasValidInstance } from "../utils/type_gaurds.ts";
-import { fs } from "../utils/deps.ts";
+import type { Component, Storage } from '../dts/factory.d.ts';
+import { lintignore, VnoPath } from '../utils/constants.ts';
+import { liveReloadScript } from '../utils/livereload.ts';
+import { hasValidInstance } from '../utils/type_gaurds.ts';
+import { fs } from '../utils/deps.ts';
 
-export function writeBundle(storage: Storage): void {
+export function writeBundle(storage: Storage, isDev?: boolean): void {
   fs.ensureDirSync(VnoPath.Dir);
+  fs.ensureDirSync(VnoPath.DirSSR);
 
   if (fs.existsSync(VnoPath.Style)) {
     Deno.removeSync(VnoPath.Style);
   }
 
+  if (fs.existsSync(VnoPath.StyleJS)) {
+    Deno.removeSync(VnoPath.StyleJS);
+  }
+  //"vno-build/build.js" ->  dep: "import Vue from ", ->
+
+  // isDev => live reload
   Deno.writeTextFileSync(
     VnoPath.Build,
-    lintignore + `${storage.vue.dep}"${storage.vue.cdn}";\n`,
+    lintignore +
+      `${storage.vue.dep}"${storage.vue.cdn}";\n\n
+    ${isDev ? liveReloadScript : ''} `
+  );
+
+  //vno-ssr/build.js
+  Deno.writeTextFileSync(
+    VnoPath.BuildSSR,
+    lintignore + `${storage.vue.dep}"https://deno.land/x/vue_js@/mod.js";\n`
   );
 
   postorderTraverse(storage.root);
@@ -23,6 +39,14 @@ export function writeBundle(storage: Storage): void {
   Deno.writeTextFileSync(VnoPath.Build, storage.vue.mount, {
     append: true,
   });
+
+  Deno.writeTextFileSync(
+    VnoPath.BuildSSR,
+    'export default ' + storage.root.label,
+    {
+      append: true,
+    }
+  );
 }
 
 function postorderTraverse(current: Component): void {
@@ -40,6 +64,9 @@ function postorderTraverse(current: Component): void {
     Deno.writeTextFileSync(VnoPath.Build, current.instance, {
       append: true,
     });
+    Deno.writeTextFileSync(VnoPath.BuildSSR, current.instance, {
+      append: true,
+    });
   }
 
   if (current.styles) {
@@ -52,6 +79,9 @@ function postorderTraverse(current: Component): void {
 function preorderTraverse(current: Component): void {
   if (current.registration) {
     Deno.writeTextFileSync(VnoPath.Build, current.registration, {
+      append: true,
+    });
+    Deno.writeTextFileSync(VnoPath.BuildSSR, current.registration, {
       append: true,
     });
   }

@@ -57,6 +57,8 @@ export default class Component extends Base {
     return data[index].split(/[`'"]/)[1];
   }
 
+
+  //
   public async parseComponent(
     storage: Storage,
     queue: Queue,
@@ -70,6 +72,7 @@ export default class Component extends Base {
     if (this._source.errors.length) {
       showCodeFrame(this._source.descriptor, this._source.errors);
     } else {
+      //"this"refers to parseComponent
       await parse.script(this, storage, queue);
       parse.template(this as Component);
       parse.style(this);

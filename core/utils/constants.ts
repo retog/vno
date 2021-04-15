@@ -20,9 +20,12 @@ export const Vue = {
 
 // relative paths for vno-build/ bundle
 export const VnoPath: Record<string, string> = {
+  DirSSR: "vno-ssr",
   Dir: "vno-build",
   Build: "vno-build/build.js",
   Style: "vno-build/style.css",
+  StyleJS: "vno-ssr/style.js",
+  BuildSSR:"vno-ssr/build.js",
 };
 
 // ignore linting in build
@@ -32,6 +35,14 @@ export const lintignore = `/* eslint-disable */
 `;
 
 // reoccuring patterns
+//URL
+//g=global search==> returns an array of all that the pattern matches
+//parenthesis means starting a capturegroup inside parens find any patterns matching this and definitelyfind"://"
+//"/w"
+//"+" includes stuff after it
+//find :
+//websites to test regex pattern
+//"\s" find white space {2,} at least 2 spaces as white spaces
 export const patterns: Record<string, RegExp> = {
   multilineComment: /\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\//gm,
   htmlComment: /<!--([\s\S]*?)-->/gm,

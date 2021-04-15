@@ -13,14 +13,22 @@ export const template: Parser = function template(curr) {
   curr.template = template;
 };
 
+
+//template just removes carriage returns
+
+//parser takes out comments, things like that
+//checks for dependancies and this is where it searches for child components through a label property on the object
+
 export const script: Parser = async function (curr, storage, queue) {
   let script = curr.script_data.content;
+
   // prevent to cut urls like http://, https://, ftp:// or file://
   const scriptArr: string[] = script
     .split("\n")
     .map((line: string) => {
       const comment = line.indexOf("//");
       if (comment !== -1) {
+        //if a // is found, ensure its not a url pattern before removing it
         if (!line.match(patterns.url)) {
           return line.slice(0, comment);
         }
@@ -49,7 +57,7 @@ export const style: Parser = function (curr) {
   let styles = curr.style_data[0].content;
 
   styles = styles.replace(patterns.multilineComment, "");
-
+//taking out comments, checking langauge of css, supports sass
   if (curr.style_data[0].lang === "scss") {
     try {
       styles = scssCompiler(styles);
