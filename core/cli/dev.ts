@@ -16,7 +16,7 @@ export const runDevServer = async function (port: number, hostname: string) {
     // create event listeneer that listens for "buildDone" event
     const reloadWindow = () => {
       console.log("[back to you Client!]");
-      ws.send('window.location.reload();');
+      ws.send('reload window');
       event.removeListener("buildDone", reloadWindow);
     };
 
