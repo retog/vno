@@ -9,12 +9,18 @@ export const _script: Resolve.Source = async function (data, path, tsCheck) {
   if (typeof data === "string") {
     throw new TypeError("invalid arguments");
   }
-
+//"^" beginning of line
+//"\s" looks for whitespace
+//looking for export
+//"*" 0 or more
+//() capture group: please find any in capture group and also allow you to remember it refer
+//to it by $1,2,3 etc.. like postgres $1, $2 for points you want to make dynamic.
+//so later you can change the $1 that you can find and replace
   const start = utils.indexOfRegExp(/^\s*(export)/, data);
   const end = data.lastIndexOf("}");
 
   const trimmed = data.slice(start + 1, end).join("\n");
-
+//grabed trim a string of key:value pairs and putting it inside object
   let script = tsCheck
     ? await typescriptCompile(`({ ${trimmed} })`, path)
     : trimmed as string;
@@ -26,6 +32,7 @@ export const _script: Resolve.Source = async function (data, path, tsCheck) {
   return script as string;
 };
 
+//locates component property in string - locates references to children saved as string - checks storage tries to retreive object
 export const _dependants: Resolve.Attrs = function (curr, arr, storage, queue) {
   if (!Array.isArray(arr) || !storage || !queue) {
     throw new TypeError("invalid arguments");
@@ -61,12 +68,21 @@ export const _dependants: Resolve.Attrs = function (curr, arr, storage, queue) {
       if (!component.is_parsed) queue.enqueue(component);
       // reposition children higher on dependency graph
       preorderScrub(component.label, curr, storage);
+      //basically preorder traversal  -  in order to write bundle in correct order, never reference dependancy before its defined, parent never written above child
+      //wants to do bottom most children first - most primitive at top all the way down to app.ts
+      //scrub traverses through application tree, finds out if current comp has already been referenced, if so removes from tree and puts it on current location
+      //
       // link the child component as a dependant
       curr.dependants?.add(component);
+      //dependant property on curr is essentially a linked list helps us traverse the component tree
     }
   }
 };
 
+
+//vno struggles with third party imports in component file.
+//this collects all potential imports.  inserts them at the top of the bundle - not working perfectly
+//
 export const _middlecode: Resolve.Attrs = async function (curr, script) {
   const data = curr.script_data.content.split("\n");
   let endLine = false;
