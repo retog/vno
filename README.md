@@ -38,7 +38,7 @@
 
 ### vno installation
 
-- vno requires the use of Deno version 1.7 or above
+- vno requires the use of Deno version 1.10 or above
 - run the following command in your terminal to install vno on your machine.
 
 ```
