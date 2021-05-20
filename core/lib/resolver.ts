@@ -144,7 +144,7 @@ export const _imports: Resolve.Source = async function (source, path, script) {
       await file.write(encoder.encode(`${source} ({ ${script} })`));
 
       const { files, diagnostics } = await Deno.emit(temp, {
-        bundle: "esm",
+        bundle: "module",
         check: true,
         compilerOptions: { strict: false },
       });
