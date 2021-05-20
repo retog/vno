@@ -23,7 +23,7 @@ export { superoak } from "https://deno.land/x/superoak@4.0.0/mod.ts";
 
 // third-party
 import _ from "https://cdn.skypack.dev/lodash"; // lodash
-import ProgressBar from "https://deno.land/x/progress@2.3/mod.ts";
+import ProgressBar from "https://deno.land/x/progress@1.2.3/mod.ts";
 import { exec } from "https://deno.land/x/exec/mod.ts";
 export { _, exec, ProgressBar };
 
