@@ -29,7 +29,7 @@ main();
 async function main() {
   if (resRead && resWrite) {
     if (cmnd.create.test(command)) await create(args);
-    if (command === "SSG") {
+    if (command === "ssg") {
       if (args[1] === "build") return generate("production");
       if (args[1] === "dev") return startDev();
     }
