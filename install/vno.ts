@@ -21,11 +21,11 @@ if (resRead && resWrite) {
   if (cmnd.create.test(command)) await create(args);
   if (cmnd.build.test(command)) await build(args);
   if (cmnd.run.test(command)) {
-    const resRun = await Deno.permissions.request(runPerm)
-    if (resRun) await run(args);}
-}  
+    const resRun = await Deno.permissions.request(runPerm);
+    if (resRun) await run(args);
+  }
+}
 //   if (cmnd.dev.test(command)) {
 //     const resRun = await Deno.permissions.request(run);
-//     if(resRun) await dev(args);  
+//     if(resRun) await dev(args);
 // }
-
