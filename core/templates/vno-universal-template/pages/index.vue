@@ -1,9 +1,14 @@
 <template>
-  <div><Hello /></div>
+  <div class="hello-vno-container">
+    <VnoLogo />
+    <HelloVno />
+  </div>
 </template>
 
 <script>
-export default {};
+export default {
+  css: ['assets/index.css']
+};
 </script>
 
 <style>

@@ -182,7 +182,9 @@ export const getComponent = async (filePath: string): Promise<Component> => {
 
   // get info
   const obj = await getExport(source.descriptor.script.content as string);
-  const styles = source.descriptor.styles.map((style: any) => style.content);
+  const styles = source.descriptor.styles
+    .map((style: any) => style.content)
+    .filter((style: string) => style != '\n');
 
   return {
     name,
