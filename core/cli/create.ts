@@ -12,7 +12,15 @@ interface CreateProjectObj {
   //ssr?: boolean;
 }
 
-export const createApplication = async function (obj: CreateProjectObj) {
+/**
+ * Function to create standard Vue SPA
+ *
+ * @param obj of type CreateProjectObj
+ * @returns undefined
+ */
+export const createSinglePageApp = async function (
+  obj: CreateProjectObj,
+) {
   let app = out.options;
 
   // app becomes the evaluated result of the customize function invoked with the user arguments
@@ -35,6 +43,7 @@ export const createApplication = async function (obj: CreateProjectObj) {
   const html: string = template.htmlTemplate(app);
   const config: string = template.vnoConfig(app);
 
+  // Creates Folders
   // write to app directory
   await fs.ensureDir(out.pub); // public dir
   await fs.ensureDir(out.components); // components dir
@@ -46,7 +55,7 @@ export const createApplication = async function (obj: CreateProjectObj) {
   await Deno.writeTextFile(out.vnoconfig, config);
   await fs.ensureFile(rootFile);
   await Deno.writeTextFile(rootFile, root);
- 
+
   componentFiles.forEach(async (filename: string, i: number) => {
     await fs.ensureFile(filename);
     if (i === 0) await Deno.writeTextFile(filename, component);

@@ -1,9 +1,11 @@
 import { CreateInputs } from "../dts/factory.d.ts";
 
+export const promptUniversal =
+  "\nAre you creating a universal app(SSG/SSR) or spa(Single Page App)?";
 export const custom = "\nWould you like to customize your vno project?";
-export const init = "\n\ninitializing you vno project...\n";
-export const creating = "\ncreating your vno project...\n";
-export const reset = "\nresetting user options\n";
+export const init = "\n\nInitializing your vno project...\n";
+export const creating = "\nCreating your vno project...\n";
+export const reset = "\nResetting user options\n";
 
 export const load = ":completed/:total vno load :time [:bar] :percent";
 export const pub = "public";
@@ -40,4 +42,5 @@ export const cmnd = {
   help: /--help/i,
   info: /--info/i,
   buildSsr: /--ssr/i,
+  buildSS: /--ss/i,
 };
