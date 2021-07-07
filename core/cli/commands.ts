@@ -3,7 +3,7 @@ import * as print from "./stdout.ts";
 import info from "./info.ts";
 import * as fn from "./fns.ts";
 import { fs, path } from "../utils/deps.ts";
-import { createSinglePageApp, createUniversalApp } from "./create.ts";
+import { createSinglePageApp, renderProgress } from "./create.ts";
 import { runDevServer } from "./dev.ts";
 import { quietArg } from "./fns.ts";
 import { cmnd, serverTs, vnoconfig } from "./constants.ts";
@@ -45,6 +45,11 @@ export const create = async function (args: string[]): Promise<void> {
       "../templates/vno-universal-template",
     );
 
+    fn.green(out.creating);
+
+    renderProgress();
+
+    // copy vno-ssg directory to current build directory
     fs.copy(templatePath, currDir, { overwrite: true });
   } else {
     //arguments passed into CLI placed into createSinglePageApp as obj
