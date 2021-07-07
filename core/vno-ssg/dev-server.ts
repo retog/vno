@@ -1,30 +1,27 @@
 import {
   WebSocketClient,
   WebSocketServer,
-} from "https://deno.land/x/websocket@v0.1.2/mod.ts";
-import { Application, send } from "https://deno.land/x/oak@v7.7.0/mod.ts";
-import { EventEmitter } from "https://deno.land/std@0.100.0/node/events.ts";
-import * as path from "https://deno.land/std@0.99.0/path/mod.ts";
-import { debounce } from "./utils.ts";
-import { generate } from "./generate.ts";
+} from 'https://deno.land/x/websocket@v0.1.2/mod.ts';
+import { Application, send } from 'https://deno.land/x/oak@v7.7.0/mod.ts';
+import { EventEmitter } from 'https://deno.land/std@0.100.0/node/events.ts';
+import * as path from 'https://deno.land/std@0.99.0/path/mod.ts';
+import { debounce } from './utils.ts';
+import { generate } from './generate.ts';
 
 const emitter = new EventEmitter();
 
 const startReloadServer = () => {
   const wss = new WebSocketServer(8080);
-  wss.on("connection", (ws: WebSocketClient) => {
-    console.log("client connected");
+  wss.on('connection', (ws: WebSocketClient) => {
+    const reloadListener = () => ws.send('reload');
 
-    const reloadListener = () => ws.send("reload");
+    emitter.addListener('fileChange', reloadListener);
 
-    emitter.addListener("fileChange", reloadListener);
-
-    ws.on("close", () => {
-      emitter.removeListener("fileChange", reloadListener);
-      console.log("client disconnected");
+    ws.on('close', () => {
+      emitter.removeListener('fileChange', reloadListener);
     });
   });
-  console.log("reload enabled");
+  console.log('reload enabled');
 };
 
 const startServer = async () => {
@@ -32,39 +29,40 @@ const startServer = async () => {
 
   app.use(async (context: any) => {
     await send(context, context.request.url.pathname, {
-      root: path.join(Deno.cwd(), ".vno", "dist"),
-      index: "index.html",
+      root: path.join(Deno.cwd(), '.vno', 'dist'),
+      index: 'index.html',
     });
   });
 
-  console.log("server started");
+  console.log('server started');
   await app.listen({ port: 5000 });
 };
 
 const watchBuild = async () => {
-  const watcher = Deno.watchFs(path.join(Deno.cwd(), ".vno", "dist"));
+  const watcher = Deno.watchFs(path.join(Deno.cwd(), '.vno', 'dist'));
 
   const onFileChange = debounce(() => {
-    console.log("reloading...");
-    emitter.emit("fileChange");
+    emitter.emit('fileChange');
   });
 
   for await (const event of watcher) {
     if (/modify|create/.test(event.kind)) {
-      onFileChange();
+      onFileChange(event);
     }
   }
 };
 
 const watchSource = async () => {
   const watcher = Deno.watchFs(
-    ["assets", "components", "pages"].map((name) =>
-      path.join(Deno.cwd(), name)
-    ),
+    ['assets', 'components', 'pages'].map((name) => path.join(Deno.cwd(), name))
   );
 
-  const onFileChange = debounce(() => {
-    generate();
+  const onFileChange = debounce(async () => {
+    try {
+      await generate();
+    } catch (err) {
+      console.log(err);
+    }
   });
 
   for await (const event of watcher) {
@@ -75,7 +73,7 @@ const watchSource = async () => {
 };
 
 export const startDev = async () => {
-  await generate("development");
+  await generate('development');
   startReloadServer();
   startServer();
   watchSource();

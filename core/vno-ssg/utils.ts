@@ -14,8 +14,15 @@ export interface PathData {
 /**
  * Passed to 'getStaticProps'.
  */
-export interface Context {
+export interface GetStaticPropsContext {
   params: Mapped<string>;
+  fetch: typeof fetch;
+}
+
+/**
+ * Passed to 'getStaticPaths'
+ */
+export interface GetStaticPathsContext {
   fetch: typeof fetch;
 }
 
@@ -25,8 +32,10 @@ export interface Context {
 export interface VueExport {
   default: {
     name: string;
-    getStaticProps?: (data: Context) => any;
-    getStaticPaths?: () => Promise<PathData[]> | PathData[];
+    getStaticProps?: (ctx: GetStaticPropsContext) => any;
+    getStaticPaths?: (
+      ctx: GetStaticPathsContext
+    ) => Promise<PathData[]> | PathData[];
     css?: string[];
   };
 }

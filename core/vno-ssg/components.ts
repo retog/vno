@@ -13,6 +13,7 @@ export interface Component {
   deps: Set<string>;
   exports: VueExport['default'];
   css: string[];
+  styles: string[];
   vueCmp: any;
 }
 
@@ -90,6 +91,7 @@ const addCssDeps = (cmps: Mapped<Component>) => {
   // perform dfs
   const dfs = (cmp: Component) => {
     const seenCss = new Set(cmp.css);
+    const seenStyles = new Set(cmp.styles);
 
     // loop through dependencies
     for (const depName of cmp.deps) {
@@ -104,6 +106,14 @@ const addCssDeps = (cmps: Mapped<Component>) => {
         if (!seenCss.has(css)) {
           seenCss.add(css);
           cmp.css.push(css);
+        }
+      }
+
+      // add unique styles
+      for (const style of cmps[depName].styles) {
+        if (!seenStyles.has(style)) {
+          seenStyles.add(style);
+          cmp.styles.push(style);
         }
       }
     }
@@ -170,8 +180,9 @@ export const getComponent = async (filePath: string): Promise<Component> => {
   // parse
   const source = vueCompiler.parse(raw);
 
-  // get script export
+  // get info
   const obj = await getExport(source.descriptor.script.content as string);
+  const styles = source.descriptor.styles.map((style: any) => style.content);
 
   return {
     name,
@@ -181,6 +192,7 @@ export const getComponent = async (filePath: string): Promise<Component> => {
     deps: new Set(),
     exports: obj.default,
     css: obj.default.css || [],
+    styles,
     vueCmp: null,
   };
 };
