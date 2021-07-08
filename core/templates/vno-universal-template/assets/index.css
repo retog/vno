@@ -7,19 +7,18 @@
 }
 
 body {
-  background: url("https://baigumair.com/wp-content/uploads/2021/07/vno-ssg-bg-1.jpg");
+  background: url("https://baigumair.com/wp-content/uploads/2021/07/vno-ssg-bg-v2-orig.jpg");
+  background-size: cover;
+  background-position: top center;
   width: 100%;
   height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
   font-family: "Quicksand";
   font-weight: 400;
+  justify-content: center;
 }
 
 .hello-vno-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }

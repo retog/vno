@@ -22,6 +22,7 @@ export interface GenHtmlParams {
   cmps?: Mapped<Component>;
   assets?: Mapped<string>;
   reload?: boolean;
+  reloadPort?: number;
 }
 
 /**
@@ -124,7 +125,7 @@ export const genHtml = async (params: GenHtmlParams) => {
 
   // read the html template
   const htmlTemplate = await Deno.readTextFile(
-    path.join(__dirname, 'index.html')
+    path.join(Deno.cwd(), 'public', 'index.html')
   );
 
   // insert styles and body
@@ -134,10 +135,14 @@ export const genHtml = async (params: GenHtmlParams) => {
 
   // add reload
   if (params.reload) {
-    const reloadScript = minify(
-      Language.JS,
-      await Deno.readTextFile(path.join(__dirname, 'reload.js'))
+    let reloadScript = await Deno.readTextFile(
+      path.join(__dirname, 'reload.js')
     );
+    if (params.reloadPort) {
+      reloadScript = reloadScript.replace(/8080/, params.reloadPort.toString());
+    }
+    reloadScript = minify(Language.JS, reloadScript);
+
     html = html.replace(/<\/body>/, `<script>${reloadScript}</script>$&`);
   }
 
