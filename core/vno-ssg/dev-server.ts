@@ -10,8 +10,8 @@ import { generate } from './generate.ts';
 
 const emitter = new EventEmitter();
 
-const startReloadServer = () => {
-  const wss = new WebSocketServer(8080);
+const startReloadServer = (port: number) => {
+  const wss = new WebSocketServer(port);
   wss.on('connection', (ws: WebSocketClient) => {
     const reloadListener = () => ws.send('reload');
 
@@ -24,7 +24,7 @@ const startReloadServer = () => {
   console.log('reload enabled');
 };
 
-const startServer = async () => {
+const startServer = async (port: number) => {
   const app = new Application();
 
   app.use(async (context: any) => {
@@ -34,8 +34,8 @@ const startServer = async () => {
     });
   });
 
-  console.log('server started');
-  await app.listen({ port: 5000 });
+  console.log(`server started on port ${port}`);
+  await app.listen({ port });
 };
 
 const watchBuild = async () => {
@@ -52,14 +52,16 @@ const watchBuild = async () => {
   }
 };
 
-const watchSource = async () => {
+const watchSource = async (reloadPort: number) => {
   const watcher = Deno.watchFs(
-    ['assets', 'components', 'pages'].map((name) => path.join(Deno.cwd(), name))
+    ['assets', 'components', 'pages', 'public'].map((name) =>
+      path.join(Deno.cwd(), name)
+    )
   );
 
   const onFileChange = debounce(async () => {
     try {
-      await generate();
+      await generate('development', reloadPort);
     } catch (err) {
       console.log(err);
     }
@@ -72,11 +74,28 @@ const watchSource = async () => {
   }
 };
 
+interface VnoConfig {
+  default: {
+    port?: number;
+    reloadPort?: number;
+  };
+}
+
+const getConfig = (): Promise<VnoConfig> => {
+  return import(path.join(Deno.cwd(), 'vno.config.js'));
+};
+
 export const startDev = async () => {
-  await generate('development');
-  startReloadServer();
-  startServer();
-  watchSource();
+  let {
+    default: { port, reloadPort },
+  } = await getConfig();
+  if (!port) port = 3000;
+  if (!reloadPort) reloadPort = 8080;
+
+  await generate('development', reloadPort);
+  startServer(port);
+  startReloadServer(reloadPort);
+  watchSource(reloadPort);
   watchBuild();
 };
 

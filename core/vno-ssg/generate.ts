@@ -8,7 +8,8 @@ import { getAssets } from './assets.ts';
  * Statically generate project.
  */
 export const generate = async (
-  mode: 'production' | 'development' = 'development'
+  mode: 'production' | 'development' = 'development',
+  reloadPort?: number
 ) => {
   const start = Date.now();
 
@@ -66,6 +67,7 @@ export const generate = async (
                 cmps,
                 assets,
                 reload: mode === 'development',
+                reloadPort,
               })
             );
           }
@@ -91,6 +93,7 @@ export const generate = async (
             cmps,
             assets,
             reload: mode === 'development',
+            reloadPort,
           });
         })()
       );
