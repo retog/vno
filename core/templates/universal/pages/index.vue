@@ -1,5 +1,5 @@
 <template>
-  <div class="hello-vno-container">
+  <div class="app">
     <VnoLogo />
     <HelloVno />
   </div>
@@ -7,7 +7,7 @@
 
 <script>
 export default {
-  css: ['assets/index.css']
+  css: ["assets/index.css"],
 };
 </script>
 
