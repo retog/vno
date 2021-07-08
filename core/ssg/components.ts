@@ -1,17 +1,17 @@
-import Vue from 'https://deno.land/x/vue_js@0.0.5/mod.js';
-import * as fs from 'https://deno.land/std@0.83.0/fs/mod.ts';
-import * as vueCompiler from 'https://denopkg.com/crewdevio/vue-deno-compiler/mod.ts';
-import renderer from 'https://deno.land/x/vue_server_renderer@0.0.4/mod.js';
-import * as path from 'https://deno.land/std@0.99.0/path/mod.ts';
-import { getExport, getTags, Mapped, VueExport } from './utils.ts';
+import Vue from "https://deno.land/x/vue_js@0.0.5/mod.js";
+import * as fs from "https://deno.land/std@0.83.0/fs/mod.ts";
+import * as vueCompiler from "https://denopkg.com/crewdevio/vue-deno-compiler/mod.ts";
+import * as path from "https://deno.land/std@0.99.0/path/mod.ts";
+import { getExport, getTags, Mapped, VueExport } from "./utils.ts";
 
 export interface Component {
   name: string;
   path: string;
   raw: string;
   source: any;
-  deps: Set<string>;
-  exports: VueExport['default'];
+  dependencies: Set<string>;
+  dependants: Set<string>;
+  exports: VueExport["default"];
   css: string[];
   styles: string[];
   vueCmp: any;
@@ -28,7 +28,7 @@ const checkDepsCycle = (cmps: Mapped<Component>) => {
   // perform dfs
   const dfs = (cmp: Component) => {
     // loop through dependencies
-    for (const depName of cmp.deps) {
+    for (const depName of cmp.dependencies) {
       // if a component is seen but not completed, then that means the component has remaining dependencies that have not been completed
       if (seen.has(depName) && !completed.has(depName)) {
         return true;
@@ -78,7 +78,7 @@ export const addComponentDeps = (cmp: Component, cmps: Mapped<Component>) => {
  */
 const addComponentsDeps = (cmps: Mapped<Component>) => {
   for (const cmp of Object.values(cmps)) {
-    cmp.deps = addComponentDeps(cmp, cmps);
+    cmp.dependencies = addComponentDeps(cmp, cmps);
   }
 };
 
@@ -94,7 +94,7 @@ const addCssDeps = (cmps: Mapped<Component>) => {
     const seenStyles = new Set(cmp.styles);
 
     // loop through dependencies
-    for (const depName of cmp.deps) {
+    for (const depName of cmp.dependencies) {
       // complete dependencies first
       if (!seen.has(depName)) {
         seen.add(depName);
@@ -139,10 +139,11 @@ const addVue = (cmps: Mapped<Component>) => {
     const components: { [name: string]: any } = {};
 
     // complete dependencies first
-    for (const depName of cmp.deps) {
+    for (const depName of cmp.dependencies) {
       if (!seen.has(depName)) {
         seen.add(depName);
         dfs(cmps[depName]);
+        cmps[depName].dependants.add(cmp.name);
       }
 
       // add vue component dependency, needed for vue
@@ -184,14 +185,15 @@ export const getComponent = async (filePath: string): Promise<Component> => {
   const obj = await getExport(source.descriptor.script.content as string);
   const styles = source.descriptor.styles
     .map((style: any) => style.content)
-    .filter((style: string) => style != '\n');
+    .filter((style: string) => style != "\n");
 
   return {
     name,
     path: filePath,
     raw,
     source,
-    deps: new Set(),
+    dependencies: new Set(),
+    dependants: new Set(),
     exports: obj.default,
     css: obj.default.css || [],
     styles,
@@ -206,9 +208,11 @@ export const getComponents = async () => {
   const cmps: Mapped<Component> = {};
 
   // get components from components folder
-  for await (const file of fs.walk(path.join(Deno.cwd(), 'components'), {
-    exts: ['vue'],
-  })) {
+  for await (
+    const file of fs.walk(path.join(Deno.cwd(), "components"), {
+      exts: ["vue"],
+    })
+  ) {
     const cmp = await getComponent(file.path);
     cmps[cmp.name] = cmp;
   }
@@ -218,7 +222,7 @@ export const getComponents = async () => {
 
   // check if a cycle exists
   if (checkDepsCycle(cmps)) {
-    throw Error('cycle exists');
+    throw Error("cycle exists");
   }
 
   // add css dependencies
@@ -233,25 +237,9 @@ export const getComponents = async () => {
 // DEVELOPMENT ONLY
 const main = async () => {
   const cmps = await getComponents();
-
-  const app = new Vue({
-    name: 'app',
-    template: '<div><h1>My App</h1><Navbar /></div>',
-    components: {
-      Navbar: cmps['Navbar'].vueCmp,
-    },
-  });
-
-  return new Promise((resolve, reject) =>
-    renderer(app, (err: any, html: string) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(html);
-    })
-  );
+  console.log(cmps);
 };
 
 if (import.meta.main) {
-  console.log(await main());
+  main();
 }

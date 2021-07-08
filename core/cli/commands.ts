@@ -42,7 +42,7 @@ export const create = async function (args: string[]): Promise<void> {
     const currDir = Deno.cwd();
     const templatePath = path.resolve(
       __dirname,
-      "../templates/vno-universal-template",
+      "../templates/universal",
     );
 
     fn.green(out.creating);
