@@ -94,11 +94,14 @@ const writeJs = async (obj: any, cmp: Component) => {
 
 export const writeJs2 = async (obj: any, cmp: any, name: string) => {
   const jsPath = path.join(Deno.cwd(), ".vno", "dist", "__vno", "static", "js");
-  await fs.ensureDir(jsPath);
   const jsFile = path.join(
     jsPath,
     name + ".js",
   );
+  if (await fs.exists(jsFile)) {
+    return;
+  }
+  await fs.ensureDir(jsPath);
   let js = "Vue.config.productionTip = false;\n";
   for (const dep in obj.components) {
     js += `import ${dep} from '${"./" + dep + ".js"}';\n`;

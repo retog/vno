@@ -50,17 +50,33 @@ export const generate = async (
             cmp.exports.getStaticPaths({ fetch }),
           );
 
-          const promises: Promise<void>[] = [];
+          const jsName = Math.random().toString(36);
 
-          // create a page for each path
-          for (const pathData of pathsData) {
+          const pathData = pathsData[0];
+          // get the page id
+          const id = pathData.params[name.slice(1, name.length - 1)]
+            .toString();
+          // create an output location using the id
+          const output = path.join(distDir, relPath, id, "index.html");
+          await genHtml({
+            entry: file.path,
+            output,
+            pathData,
+            cmps,
+            assets,
+            reload: mode === "development",
+            reloadPort,
+            jsName,
+          });
+
+          const promises: Promise<void>[] = [];
+          for (let i = 1; i < pathsData.length; i++) {
+            const pathData = pathsData[i];
             // get the page id
             const id = pathData.params[name.slice(1, name.length - 1)]
               .toString();
-
             // create an output location using the id
             const output = path.join(distDir, relPath, id, "index.html");
-
             promises.push(
               genHtml({
                 entry: file.path,
@@ -70,6 +86,7 @@ export const generate = async (
                 assets,
                 reload: mode === "development",
                 reloadPort,
+                jsName,
               }),
             );
           }

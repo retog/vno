@@ -28,6 +28,7 @@ export interface GenHtmlParams {
   assets?: Mapped<string>;
   reload?: boolean;
   reloadPort?: number;
+  jsName?: string;
 }
 
 /**
@@ -105,7 +106,7 @@ export const genHtml = async (params: GenHtmlParams) => {
   }</script>`;
 
   // DEVELOPMENT
-  const name = Math.random().toString(36);
+  const name = params.jsName || Math.random().toString(36);
   await writeJs2(
     {
       template,
