@@ -169,7 +169,7 @@ export const genHtml = async (params: GenHtmlParams) => {
 
   html = html.replace(
     /<\/body>/,
-    `<script src="./__vno/static/js/${name}.js" type="module"></script>$&`,
+    `<script src="/__vno/static/js/${name}.js" type="module"></script>$&`,
   );
   html = html.replace(/<\/body>/, `${dataHtml}$&`);
 
