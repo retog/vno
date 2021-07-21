@@ -38,19 +38,19 @@ const startServer = async (port: number) => {
   await app.listen({ port });
 };
 
-const watchBuild = async () => {
-  const watcher = Deno.watchFs(path.join(Deno.cwd(), ".vno", "dist"));
+// const watchBuild = async () => {
+//   const watcher = Deno.watchFs(path.join(Deno.cwd(), ".vno", "dist"));
 
-  const onFileChange = debounce(() => {
-    emitter.emit("fileChange");
-  });
+//   const onFileChange = debounce(() => {
+//     emitter.emit("fileChange");
+//   });
 
-  for await (const event of watcher) {
-    if (/modify|create/.test(event.kind)) {
-      onFileChange(event);
-    }
-  }
-};
+//   for await (const event of watcher) {
+//     if (/modify|create/.test(event.kind)) {
+//       // onFileChange(event);
+//     }
+//   }
+// };
 
 const watchSource = async (reloadPort: number) => {
   const watcher = Deno.watchFs(
@@ -62,6 +62,7 @@ const watchSource = async (reloadPort: number) => {
   const onFileChange = debounce(async () => {
     try {
       await generate("development", reloadPort);
+      emitter.emit("fileChange");
     } catch (err) {
       console.log(err);
     }
@@ -92,11 +93,15 @@ export const startDev = async () => {
   if (!port) port = 3000;
   if (!reloadPort) reloadPort = 8080;
 
-  await generate("development", reloadPort);
+  try {
+    await generate("development", reloadPort);
+  } catch (err) {
+    console.log(err);
+  }
   startServer(port);
   startReloadServer(reloadPort);
   watchSource(reloadPort);
-  watchBuild();
+  // watchBuild();
 };
 
 if (import.meta.main) {
