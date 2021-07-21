@@ -15,7 +15,111 @@ export interface Component {
   css: string[];
   styles: string[];
   vueCmp: any;
+  jsFile: string;
 }
+
+export const serialize = (
+  str: any,
+  short = false,
+  skip = <string[]> ["getStaticProps", "getStaticPaths"],
+): string => {
+  if (typeof str === "string") {
+    return `\`${str}\``;
+  }
+
+  if (typeof str !== "object") {
+    return str.toString();
+  }
+
+  if (Array.isArray(str)) {
+    let res = "[";
+    for (const el of str) {
+      res += serialize(el) + ",";
+    }
+    res += "]";
+    return res;
+  }
+
+  let res = "{";
+  for (const key in str) {
+    if (short) {
+      res += key + ",";
+      continue;
+    }
+
+    if (skip.includes(key)) {
+      continue;
+    }
+
+    const val = serialize(str[key], ["components"].includes(key), skip);
+
+    if (val.match(/^\w+\(\)/)) {
+      res += val + ",";
+    } else {
+      res += key + ":" + val + ",";
+    }
+  }
+  res += "}";
+  return res;
+};
+
+const writeJs = async (obj: any, cmp: Component) => {
+  const jsPath = path.join(Deno.cwd(), ".vno", "dist", "__vno", "static", "js");
+  await fs.ensureDir(jsPath);
+
+  const jsFile = path.join(
+    jsPath,
+    obj.name + ".js",
+  );
+
+  let js = `import exports from './${cmp.name}.script.js';\n`;
+  for (const dep of cmp.dependencies) {
+    js += `import ${dep} from '${"./" + dep + ".js"}';\n`;
+  }
+  js += `const {getStaticProps, getStaticPaths, ...restExports} = exports;\n`;
+  js += `const cmp = Vue.component('${cmp.name}',{...restExports, ...${
+    serialize(obj)
+  }});\nexport default cmp;`;
+
+  await Deno.writeTextFile(
+    jsFile,
+    js,
+  );
+
+  await Deno.writeTextFile(
+    path.join(jsPath, cmp.name + ".script.js"),
+    cmp.source.descriptor.script.content,
+  );
+};
+
+export const writeJs2 = async (obj: any, cmp: any, name: string) => {
+  const jsPath = path.join(Deno.cwd(), ".vno", "dist", "__vno", "static", "js");
+  await fs.ensureDir(jsPath);
+  const jsFile = path.join(
+    jsPath,
+    name + ".js",
+  );
+  let js = "Vue.config.productionTip = false;\n";
+  for (const dep in obj.components) {
+    js += `import ${dep} from '${"./" + dep + ".js"}';\n`;
+  }
+  js += `import exports from './${name}.script.js';\n`;
+  js +=
+    `const data=JSON.parse(document.querySelector("#__VNO_DATA__").textContent);\n`;
+  js += `const {getStaticProps, getStaticPaths, ...restExports} = exports;\n`;
+  js += `const cmp=new Vue({...restExports, ...${
+    serialize(obj)
+  }}); cmp.$mount('#app');`;
+  await Deno.writeTextFile(
+    jsFile,
+    js,
+  );
+
+  await Deno.writeTextFile(
+    path.join(jsPath, name + ".script.js"),
+    cmp.source.descriptor.script.content,
+  );
+};
 
 /**
  * Detect if there are any circular dependencies within components.
@@ -150,6 +254,13 @@ const addVue = (cmps: Mapped<Component>) => {
       components[depName] = cmps[depName].vueCmp;
     }
 
+    // DEVELOPMENT
+    writeJs({
+      name: cmp.name,
+      template: cmp.source.descriptor.template.content as string,
+      components,
+    }, cmp);
+
     // create the vue component
     const vueCmp = (Vue as any).component(cmp.name, {
       ...cmp.exports,
@@ -198,6 +309,7 @@ export const getComponent = async (filePath: string): Promise<Component> => {
     css: obj.default.css || [],
     styles,
     vueCmp: null,
+    jsFile: "",
   };
 };
 
@@ -236,8 +348,10 @@ export const getComponents = async () => {
 
 // DEVELOPMENT ONLY
 const main = async () => {
+  const jsPath = path.join(Deno.cwd(), ".vno", "dist", "__vno", "static", "js");
+  await fs.emptyDir(jsPath);
   const cmps = await getComponents();
-  console.log(cmps);
+  // console.log(cmps);
 };
 
 if (import.meta.main) {
