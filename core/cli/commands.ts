@@ -1,18 +1,31 @@
-import Factory from '../factory/Factory.ts';
-import * as print from './stdout.ts';
-import info from './info.ts';
-import * as fn from './fns.ts';
-import { fs, path } from '../utils/deps.ts';
-import { createApplication } from './create.ts';
-import { runDevServer } from './dev.ts';
-import { quietArg } from './fns.ts';
-import { cmnd, serverTs, vnoconfig } from './constants.ts';
-import { Config } from '../dts/factory.d.ts';
-import { ssrTemplate } from '../cli/templates.ts';
-import { existsSync } from 'https://deno.land/std/fs/mod.ts';
+import Factory from "../factory/Factory.ts";
+import * as print from "./stdout.ts";
+import info from "./info.ts";
+import * as fn from "./fns.ts";
+import { fs, path } from "../utils/deps.ts";
+import { createSinglePageApp, renderProgress } from "./create.ts";
+import { runDevServer } from "./dev.ts";
+import { quietArg } from "./fns.ts";
+import { cmnd, serverTs, vnoconfig } from "./constants.ts";
+import { Config } from "../dts/factory.d.ts";
+import { ssrTemplate } from "../cli/templates.ts";
+import { existsSync } from "https://deno.land/std/fs/mod.ts";
+import * as out from "./constants.ts";
 
 //Contains Create, Build, Run, and flag commands
 export const create = async function (args: string[]): Promise<void> {
+  args = Array.from(args);
+
+  // prompt user to select a type of app: universal app or single page app
+  let appType: string | null = null;
+  const spaFlagIndex = args.findIndex((arg) => arg === "--spa");
+  if (spaFlagIndex >= 0) {
+    appType = "spa";
+    args.splice(spaFlagIndex, 1);
+  } else {
+    appType = await prompt(out.promptUniversal, "universal/spa");
+  }
+
   //.test is method on regex pattern - it returns true/false based on if args[0] is 'create' if no 'create', return
   if (!cmnd.create.test(args[0])) return;
 
@@ -30,13 +43,33 @@ export const create = async function (args: string[]): Promise<void> {
     await fs.ensureDir(dir);
     Deno.chdir(dir);
   }
-  //arguments passed into CLI placed into createApplication as obj
-  await createApplication({
-    title,
-    root,
-    port,
-    components,
-  });
+
+  const __filename = path.fromFileUrl(import.meta.url);
+  const __dirname = path.dirname(path.fromFileUrl(import.meta.url));
+
+  if (appType === "universal") {
+    const currDir = Deno.cwd();
+    const templatePath = path.resolve(
+      __dirname,
+      "../templates/universal",
+    );
+
+    fn.green(out.creating);
+
+    renderProgress();
+
+    // copy vno-ssg directory to current build directory
+    fs.copy(templatePath, currDir, { overwrite: true });
+  } else {
+    //arguments passed into CLI placed into createSinglePageApp as obj
+    await createSinglePageApp({
+      title,
+      root,
+      port,
+      components,
+    });
+  }
+
   return;
 };
 
@@ -124,5 +157,5 @@ export const flags = function (args: string[]): void {
   if (helpArg) {
     print.CMDS(info);
     print.OPTIONS(info);
-  } else console.log('\n');
+  } else console.log("\n");
 };
