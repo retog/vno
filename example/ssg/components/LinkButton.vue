@@ -1,12 +1,17 @@
 <template>
   <a v-bind:href="to">
-    <button class="link-button"><slot></slot></button>
+    <button class="link-button" @click="clickMe"><slot></slot></button>
   </a>
 </template>
 
 <script>
 export default {
   props: ["to"],
+  methods: {
+    clickMe() {
+      console.log("you clicked me");
+    },
+  },
 };
 </script>
 

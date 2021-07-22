@@ -3,8 +3,6 @@
     <h1>Welcome to Vno Wars</h1>
     <h3>Explore</h3>
     <LinkButton to="/people">People</LinkButton>
-    <LinkButton to="/people">Planets</LinkButton>
-    <LinkButton to="/people">Films</LinkButton>
   </div>
 </template>
 

@@ -18,11 +18,9 @@ export const generate = async (
     ? path.join(Deno.cwd(), "dist")
     : path.join(Deno.cwd(), ".vno", "dist");
 
-  // empty output folder
   await fs.emptyDir(distDir);
 
-  // get pieces
-  const cmps = await getComponents(mode);
+  const cmps = await getComponents(mode); // load the cmps only once at beginning of generation
   const assets = await getAssets([/\.css$/i]);
 
   const promises: Promise<void>[] = [];
@@ -56,11 +54,12 @@ export const generate = async (
 
           const clientJsFileName = Math.random().toString(36).substring(2, 15);
 
+          // do one page first b/c it will generate the client side js which is the same for remaining pages
           const pathData = pathsData[0];
           // get the page id
           const id = pathData.params[name.slice(1, name.length - 1)]
             .toString();
-          // create an output location using the id
+          // output location is based on the id
           const output = path.join(distDir, relPath, id, "index.html");
           await genHtml({
             entry: file.path,
