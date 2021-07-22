@@ -59,13 +59,11 @@ export const genHtml = async (params: GenHtmlParams) => {
   cmps = cmps || (await getComponents());
   assets = assets || (await getAssets([/\.css$/i]));
 
-  // get the page component info
   const cmp = await getComponent(entry);
   const template = `<div id="__vno">${cmp.source.descriptor.template
     .content as string}</div>`;
   const styles = cmp.source.descriptor.styles;
 
-  // get component and css dependencies
   let cmpStyles = "\n";
   const seenCss = new Set(cmp.css); // only need one of each css file
   const seenStyles = new Set<string>();
@@ -76,9 +74,7 @@ export const genHtml = async (params: GenHtmlParams) => {
     if (tag in cmps) {
       components[tag] = cmps[tag].vueCmp;
 
-      // loop through components css
       for (const css of cmps[tag].css) {
-        // only added if new
         if (!seenCss.has(css)) {
           seenCss.add(css);
           cmp.css.push(css);
@@ -98,10 +94,8 @@ export const genHtml = async (params: GenHtmlParams) => {
   let rawCss = "\n";
   // loop through css dependency array, performed in reverse because component level css were added last
   for (const css of [...cmp.css].reverse()) {
-    // get the full css path
     const cssFile = path.join(Deno.cwd(), css);
 
-    // throw error if not found from assets folder
     if (!assets[cssFile]) {
       throw Error("invalid css");
     }
@@ -133,28 +127,34 @@ export const genHtml = async (params: GenHtmlParams) => {
   } else {
     jsPath = path.join(Deno.cwd(), "dist", "__vno", "static", "js");
   }
-  await fs.ensureDir(jsPath);
-  const clientJs = getPageJs(
-    {
-      template,
-      data() {
-        return data;
+  const jsFilePath = path.join(
+    jsPath,
+    jsFileName + ".js",
+  );
+  if (!(await fs.exists(jsFilePath))) {
+    await fs.ensureDir(jsPath);
+    const clientJs = getPageJs(
+      {
+        template,
+        data() {
+          return data;
+        },
+        components,
       },
-      components,
-    },
-    jsFileName,
-  );
-  await Deno.writeTextFile(
-    path.join(
-      jsPath,
-      jsFileName + ".js",
-    ),
-    clientJs,
-  );
-  await Deno.writeTextFile(
-    path.join(jsPath, jsFileName + ".script.js"),
-    cmp.source.descriptor.script.content,
-  );
+      jsFileName,
+    );
+    await Deno.writeTextFile(
+      path.join(
+        jsPath,
+        jsFileName + ".js",
+      ),
+      clientJs,
+    );
+    await Deno.writeTextFile(
+      path.join(jsPath, jsFileName + ".script.js"),
+      cmp.source.descriptor.script.content,
+    );
+  }
 
   // creating the root Vue component
   const App = new Vue({
@@ -205,6 +205,7 @@ export const genHtml = async (params: GenHtmlParams) => {
     html = html.replace(/<\/body>/, `<script>${reloadScript}</script>$&`);
   }
 
+  // add js scripts and data
   html = html.replace(
     /<\/body>/,
     `<script src="/__vno/static/js/${jsFileName}.js" type="module"></script>$&`,

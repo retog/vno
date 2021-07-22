@@ -22,32 +22,26 @@ export interface Component {
  * Detect if there are any circular dependencies within components.
  */
 const checkDepsCycle = (cmps: Mapped<Component>) => {
-  // keep track of seen and completed components
   const seen = new Set<string>();
   const completed = new Set<string>();
 
-  // perform dfs
   const dfs = (cmp: Component) => {
-    // loop through dependencies
     for (const depName of cmp.dependencies) {
       // if a component is seen but not completed, then that means the component has remaining dependencies that have not been completed
       if (seen.has(depName) && !completed.has(depName)) {
         return true;
       }
 
-      // perform dfs on dependency
       if (!seen.has(depName)) {
         seen.add(depName);
         if (dfs(cmps[depName])) return true;
       }
     }
 
-    // have completed all depencies so component is complete
     completed.add(cmp.name);
     return false;
   };
 
-  // check all components
   for (const cmp of Object.values(cmps)) {
     if (!seen.has(cmp.name)) {
       seen.add(cmp.name);
@@ -89,14 +83,11 @@ const addComponentsDeps = (cmps: Mapped<Component>) => {
 const addCssDeps = (cmps: Mapped<Component>) => {
   const seen = new Set<string>();
 
-  // perform dfs
   const dfs = (cmp: Component) => {
     const seenCss = new Set(cmp.css);
     const seenStyles = new Set(cmp.styles);
 
-    // loop through dependencies
     for (const depName of cmp.dependencies) {
-      // complete dependencies first
       if (!seen.has(depName)) {
         seen.add(depName);
         dfs(cmps[depName]);
@@ -120,7 +111,6 @@ const addCssDeps = (cmps: Mapped<Component>) => {
     }
   };
 
-  // do for all components
   for (const cmp of Object.values(cmps)) {
     if (!seen.has(cmp.name)) {
       seen.add(cmp.name);
@@ -221,7 +211,7 @@ export const serializeComponentConfig = (
 };
 
 /**
- * Write the client side js for every component. This is needed for 'hydration'.
+ * Write the client side js for every component. This is needed for client side 'hydration'.
 */
 const writeClientJs = async (
   cmps: Component[],
@@ -273,13 +263,10 @@ const writeClientJs = async (
 export const getComponent = async (filePath: string): Promise<Component> => {
   const name = path.parse(filePath).name;
 
-  // read file
   const raw = await Deno.readTextFile(filePath);
 
-  // parse
   const source = vueCompiler.parse(raw);
 
-  // get info
   const obj = await getExport(source.descriptor.script.content as string);
   const styles = source.descriptor.styles
     .map((style: any) => style.content)
