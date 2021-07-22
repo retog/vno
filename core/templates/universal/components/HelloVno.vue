@@ -1,7 +1,9 @@
 <template>
   <div>
     <h1>Welcome To Your Vno App!</h1>
-    <a class="vno-learn-more" href="#">Read Our Docs</a>
+    <a class="vno-learn-more" href="https://vno.land/docs/ssg/getting-started"
+      >Read Our Docs</a
+    >
   </div>
 </template>
 
