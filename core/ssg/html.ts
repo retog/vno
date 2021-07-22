@@ -214,7 +214,7 @@ export const genHtml = async (params: GenHtmlParams) => {
 
   // minify
   // const final = minifyHTML(html, { minifyCSS: true, minifyJS: true });
-  const final = html;
+  const final = html; //not currently minifying b/c issues with the minify pkg
 
   // write the html file
   await fs.ensureDir(path.parse(output).dir);

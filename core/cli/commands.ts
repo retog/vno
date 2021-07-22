@@ -14,6 +14,18 @@ import * as out from "./constants.ts";
 
 //Contains Create, Build, Run, and flag commands
 export const create = async function (args: string[]): Promise<void> {
+  args = Array.from(args);
+
+  // prompt user to select a type of app: universal app or single page app
+  let appType: string | null = null;
+  const spaFlagIndex = args.findIndex((arg) => arg === "--spa");
+  if (spaFlagIndex >= 0) {
+    appType = "spa";
+    args.splice(spaFlagIndex, 1);
+  } else {
+    appType = await prompt(out.promptUniversal, "universal/spa");
+  }
+
   //.test is method on regex pattern - it returns true/false based on if args[0] is 'create' if no 'create', return
   if (!cmnd.create.test(args[0])) return;
 
@@ -31,9 +43,6 @@ export const create = async function (args: string[]): Promise<void> {
     await fs.ensureDir(dir);
     Deno.chdir(dir);
   }
-
-  // prompt user to select a type of app: universal app or single page app
-  const appType = await prompt(out.promptUniversal, "universal/spa");
 
   const __filename = path.fromFileUrl(import.meta.url);
   const __dirname = path.dirname(path.fromFileUrl(import.meta.url));
