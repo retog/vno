@@ -22,7 +22,7 @@ export const generate = async (
   await fs.emptyDir(distDir);
 
   // get pieces
-  const cmps = await getComponents();
+  const cmps = await getComponents(mode);
   const assets = await getAssets([/\.css$/i]);
 
   const promises: Promise<void>[] = [];
@@ -50,7 +50,11 @@ export const generate = async (
             cmp.exports.getStaticPaths({ fetch }),
           );
 
-          const jsName = Math.random().toString(36);
+          if (pathsData.length === 0) {
+            return;
+          }
+
+          const clientJsFileName = Math.random().toString(36).substring(2, 15);
 
           const pathData = pathsData[0];
           // get the page id
@@ -66,7 +70,8 @@ export const generate = async (
             assets,
             reload: mode === "development",
             reloadPort,
-            jsName,
+            clientJsFileName,
+            mode,
           });
 
           const promises: Promise<void>[] = [];
@@ -86,7 +91,8 @@ export const generate = async (
                 assets,
                 reload: mode === "development",
                 reloadPort,
-                jsName,
+                clientJsFileName,
+                mode,
               }),
             );
           }
@@ -113,6 +119,7 @@ export const generate = async (
             assets,
             reload: mode === "development",
             reloadPort,
+            mode,
           });
         })(),
       );
@@ -124,5 +131,6 @@ export const generate = async (
 };
 
 if (import.meta.main) {
-  generate("production");
+  await fs.emptyDir(path.join(Deno.cwd(), "dist"));
+  await generate("production");
 }
