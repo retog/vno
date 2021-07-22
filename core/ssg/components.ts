@@ -15,7 +15,6 @@ export interface Component {
   css: string[];
   styles: string[];
   vueCmp: any;
-  jsFile: string;
 }
 
 export const serialize = (
@@ -312,7 +311,6 @@ export const getComponent = async (filePath: string): Promise<Component> => {
     css: obj.default.css || [],
     styles,
     vueCmp: null,
-    jsFile: "",
   };
 };
 

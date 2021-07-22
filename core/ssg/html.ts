@@ -92,8 +92,9 @@ export const genHtml = async (params: GenHtmlParams) => {
     rawCss += `${assets[cssFile]}\n`;
   }
 
-  // call data function from the page component
-  const data = await Promise.resolve(
+  // we need to get data from functions exported from the component
+  let data = cmp.exports.data ? cmp.exports.data() : {};
+  const getStaticPropsData = await Promise.resolve(
     cmp.exports.getStaticProps
       ? cmp.exports.getStaticProps({
         ...pathData,
@@ -101,6 +102,7 @@ export const genHtml = async (params: GenHtmlParams) => {
       })
       : {},
   );
+  data = { ...data, ...getStaticPropsData };
   const dataHtml = `<script id="__VNO_DATA__" type="application/json">${
     JSON.stringify(data)
   }</script>`;
@@ -119,7 +121,7 @@ export const genHtml = async (params: GenHtmlParams) => {
     name,
   );
 
-  // create the vue page component
+  // creating the root Vue component
   const App = new Vue({
     ...cmp.exports,
     template,

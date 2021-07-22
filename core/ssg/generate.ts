@@ -108,7 +108,7 @@ export const generate = async (
 
           await genHtml({
             entry: file.path,
-            output: output,
+            output,
             cmps,
             assets,
             reload: mode === "development",
