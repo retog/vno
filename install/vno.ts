@@ -1,7 +1,7 @@
 import { build, create, flags, run } from "../core/cli/commands.ts";
 import { cmnd } from "../core/cli/constants.ts";
 import { generate } from "../core/ssg/generate.ts";
-import { startDev } from "../core/ssg/dev-server.ts";
+import { startDev } from "../core/ssg/dev.ts";
 
 //this is how you pass command line arguments to Deno, every space is an index of an array of args
 const { args } = Deno;

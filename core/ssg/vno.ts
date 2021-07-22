@@ -1,11 +1,11 @@
-import { startDev } from './dev-server.ts';
+import { startDev } from "./dev.ts";
 
-if (Deno.args[0] == '-y') {
+if (Deno.args[0] == "-y") {
   startDev();
 } else {
-  const res = prompt('start the server?:');
+  const res = prompt("start the server?:");
 
-  if (res?.startsWith('y')) {
+  if (res?.startsWith("y")) {
     startDev();
   }
 }

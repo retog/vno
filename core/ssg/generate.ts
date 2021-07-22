@@ -22,7 +22,7 @@ export const generate = async (
   await fs.emptyDir(distDir);
 
   // get pieces
-  const cmps = await getComponents();
+  const cmps = await getComponents(mode);
   const assets = await getAssets([/\.css$/i]);
 
   const promises: Promise<void>[] = [];
@@ -50,17 +50,38 @@ export const generate = async (
             cmp.exports.getStaticPaths({ fetch }),
           );
 
-          const promises: Promise<void>[] = [];
+          if (pathsData.length === 0) {
+            return;
+          }
 
-          // create a page for each path
-          for (const pathData of pathsData) {
+          const clientJsFileName = Math.random().toString(36).substring(2, 15);
+
+          const pathData = pathsData[0];
+          // get the page id
+          const id = pathData.params[name.slice(1, name.length - 1)]
+            .toString();
+          // create an output location using the id
+          const output = path.join(distDir, relPath, id, "index.html");
+          await genHtml({
+            entry: file.path,
+            output,
+            pathData,
+            cmps,
+            assets,
+            reload: mode === "development",
+            reloadPort,
+            clientJsFileName,
+            mode,
+          });
+
+          const promises: Promise<void>[] = [];
+          for (let i = 1; i < pathsData.length; i++) {
+            const pathData = pathsData[i];
             // get the page id
             const id = pathData.params[name.slice(1, name.length - 1)]
               .toString();
-
             // create an output location using the id
             const output = path.join(distDir, relPath, id, "index.html");
-
             promises.push(
               genHtml({
                 entry: file.path,
@@ -70,6 +91,8 @@ export const generate = async (
                 assets,
                 reload: mode === "development",
                 reloadPort,
+                clientJsFileName,
+                mode,
               }),
             );
           }
@@ -91,11 +114,12 @@ export const generate = async (
 
           await genHtml({
             entry: file.path,
-            output: output,
+            output,
             cmps,
             assets,
             reload: mode === "development",
             reloadPort,
+            mode,
           });
         })(),
       );
@@ -107,5 +131,6 @@ export const generate = async (
 };
 
 if (import.meta.main) {
-  generate("production");
+  await fs.emptyDir(path.join(Deno.cwd(), "dist"));
+  await generate("production");
 }

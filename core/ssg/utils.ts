@@ -1,6 +1,6 @@
-import * as path from 'https://deno.land/std@0.99.0/path/mod.ts';
-import * as fs from 'https://deno.land/std@0.83.0/fs/mod.ts';
-import { Language, minify } from 'https://deno.land/x/minifier@v1.1.1/mod.ts';
+import * as path from "https://deno.land/std@0.99.0/path/mod.ts";
+import * as fs from "https://deno.land/std@0.83.0/fs/mod.ts";
+import { Language, minify } from "https://deno.land/x/minifier@v1.1.1/mod.ts";
 
 export type Mapped<T> = { [key: string]: T };
 
@@ -34,9 +34,10 @@ export interface VueExport {
     name: string;
     getStaticProps?: (ctx: GetStaticPropsContext) => any;
     getStaticPaths?: (
-      ctx: GetStaticPathsContext
+      ctx: GetStaticPathsContext,
     ) => Promise<PathData[]> | PathData[];
     css?: string[];
+    data?: () => any;
   };
 }
 
@@ -44,12 +45,12 @@ export interface VueExport {
  * Get exports from a js script as a string.
  */
 export const getExport = async (script: string) => {
-  const tmpPath = path.join(Deno.cwd(), '.vno', 'exports');
+  const tmpPath = path.join(Deno.cwd(), ".vno", "exports");
   await fs.ensureDir(tmpPath);
 
   const jsPath = path.join(
     tmpPath,
-    `${Math.random().toString(36).substring(7)}.js`
+    `${Math.random().toString(36).substring(7)}.js`,
   );
 
   let obj: VueExport | null = null;
@@ -63,7 +64,7 @@ export const getExport = async (script: string) => {
     if (created) await Deno.remove(jsPath);
   }
 
-  if (!obj) throw Error('could not import script');
+  if (!obj) throw Error("could not import script");
   return obj;
 };
 

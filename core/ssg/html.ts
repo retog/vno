@@ -1,19 +1,39 @@
-import Vue from 'https://deno.land/x/vue_js@0.0.5/mod.js';
-import * as fs from 'https://deno.land/std@0.99.0/fs/mod.ts';
-import * as path from 'https://deno.land/std@0.99.0/path/mod.ts';
-import renderer from 'https://deno.land/x/vue_server_renderer@0.0.4/mod.js';
+import Vue from "https://deno.land/x/vue_js@0.0.5/mod.js";
+import * as fs from "https://deno.land/std@0.99.0/fs/mod.ts";
+import * as path from "https://deno.land/std@0.99.0/path/mod.ts";
+import renderer from "https://deno.land/x/vue_server_renderer@0.0.4/mod.js";
+import { Language, minify } from "https://deno.land/x/minifier@v1.1.1/mod.ts";
 import {
-  minifyHTML,
-  minify,
-  Language,
-} from 'https://deno.land/x/minifier@v1.1.1/mod.ts';
-import { Component, getComponents, getComponent } from './components.ts';
-import { Mapped, PathData, getTags } from './utils.ts';
-import { getAssets } from './assets.ts';
+  Component,
+  getComponent,
+  getComponents,
+  serializeComponentConfig,
+} from "./components.ts";
+import { getTags, Mapped, PathData } from "./utils.ts";
+import { getAssets } from "./assets.ts";
 
-const __dirname = new URL('.', import.meta.url).pathname;
+const __dirname = new URL(".", import.meta.url).pathname;
 (Vue.config as any).devtools = false;
 (Vue.config as any).productionTip = false;
+
+/**
+ * Creates the client side javascript for a page level component.
+ */
+const getPageJs = (config: any, fileName: string) => {
+  let js = "Vue.config.productionTip = false;\n";
+  for (const dep in config.components) {
+    js += `import ${dep} from '${"./" + dep + ".js"}';\n`;
+  }
+  js += `import exports from './${fileName}.script.js';\n`;
+  js +=
+    `const data=JSON.parse(document.querySelector("#__VNO_DATA__").textContent);\n`;
+  js += `const {getStaticProps, getStaticPaths, ...restExports} = exports;\n`;
+  js += `const cmp=new Vue({...restExports, ...${
+    serializeComponentConfig(config)
+  }}); cmp.$mount('#__vno');`;
+
+  return js;
+};
 
 export interface GenHtmlParams {
   entry: string;
@@ -23,6 +43,8 @@ export interface GenHtmlParams {
   assets?: Mapped<string>;
   reload?: boolean;
   reloadPort?: number;
+  clientJsFileName?: string;
+  mode: "production" | "development";
 }
 
 /**
@@ -39,11 +61,12 @@ export const genHtml = async (params: GenHtmlParams) => {
 
   // get the page component info
   const cmp = await getComponent(entry);
-  const template = cmp.source.descriptor.template.content as string;
+  const template = `<div id="__vno">${cmp.source.descriptor.template
+    .content as string}</div>`;
   const styles = cmp.source.descriptor.styles;
 
   // get component and css dependencies
-  let cmpStyles = '\n';
+  let cmpStyles = "\n";
   const seenCss = new Set(cmp.css); // only need one of each css file
   const seenStyles = new Set<string>();
   const components: Mapped<any> = {};
@@ -65,14 +88,14 @@ export const genHtml = async (params: GenHtmlParams) => {
       for (const style of cmps[tag].styles) {
         if (!seenStyles.has(style)) {
           seenStyles.add(style);
-          cmpStyles += style + '\n';
+          cmpStyles += style + "\n";
         }
       }
     }
   }
 
   // get needed css
-  let rawCss = '\n';
+  let rawCss = "\n";
   // loop through css dependency array, performed in reverse because component level css were added last
   for (const css of [...cmp.css].reverse()) {
     // get the full css path
@@ -80,26 +103,62 @@ export const genHtml = async (params: GenHtmlParams) => {
 
     // throw error if not found from assets folder
     if (!assets[cssFile]) {
-      throw Error('invalid css');
+      throw Error("invalid css");
     }
 
     rawCss += `${assets[cssFile]}\n`;
   }
 
-  // call data function from the page component
-  const data = await Promise.resolve(
+  // we need to get data from functions exported from the component
+  let data = cmp.exports.data ? cmp.exports.data() : {};
+  const getStaticPropsData = await Promise.resolve(
     cmp.exports.getStaticProps
       ? cmp.exports.getStaticProps({
-          ...pathData,
-          fetch,
-        })
-      : {}
+        ...pathData,
+        fetch,
+      })
+      : {},
+  );
+  data = { ...data, ...getStaticPropsData };
+  const dataHtml = `<script id="__VNO_DATA__" type="application/json">${
+    JSON.stringify(data)
+  }</script>`;
+
+  // writing the client side javascript
+  const jsFileName = params.clientJsFileName ||
+    Math.random().toString(36).substring(2, 15);
+  let jsPath: string;
+  if (params.mode === "development") {
+    jsPath = path.join(Deno.cwd(), ".vno", "dist", "__vno", "static", "js");
+  } else {
+    jsPath = path.join(Deno.cwd(), "dist", "__vno", "static", "js");
+  }
+  await fs.ensureDir(jsPath);
+  const clientJs = getPageJs(
+    {
+      template,
+      data() {
+        return data;
+      },
+      components,
+    },
+    jsFileName,
+  );
+  await Deno.writeTextFile(
+    path.join(
+      jsPath,
+      jsFileName + ".js",
+    ),
+    clientJs,
+  );
+  await Deno.writeTextFile(
+    path.join(jsPath, jsFileName + ".script.js"),
+    cmp.source.descriptor.script.content,
   );
 
-  // create the vue page component
+  // creating the root Vue component
   const App = new Vue({
     ...cmp.exports,
-    name: cmp.name,
     template,
     data() {
       return data;
@@ -120,12 +179,12 @@ export const genHtml = async (params: GenHtmlParams) => {
   // combine all styles
   const rawStyles = minify(
     Language.CSS,
-    cmpStyles + rawCss + styles.map((style: any) => style.content).join('\n')
+    cmpStyles + rawCss + styles.map((style: any) => style.content).join("\n"),
   );
 
   // read the html template
   const htmlTemplate = await Deno.readTextFile(
-    path.join(Deno.cwd(), 'public', 'index.html')
+    path.join(Deno.cwd(), "public", "index.html"),
   );
 
   // insert styles and body
@@ -136,7 +195,7 @@ export const genHtml = async (params: GenHtmlParams) => {
   // add reload
   if (params.reload) {
     let reloadScript = await Deno.readTextFile(
-      path.join(__dirname, 'reload.js')
+      path.join(__dirname, "reload.js"),
     );
     if (params.reloadPort) {
       reloadScript = reloadScript.replace(/8080/, params.reloadPort.toString());
@@ -146,8 +205,15 @@ export const genHtml = async (params: GenHtmlParams) => {
     html = html.replace(/<\/body>/, `<script>${reloadScript}</script>$&`);
   }
 
+  html = html.replace(
+    /<\/body>/,
+    `<script src="/__vno/static/js/${jsFileName}.js" type="module"></script>$&`,
+  );
+  html = html.replace(/<\/body>/, `${dataHtml}$&`);
+
   // minify
-  const final = minifyHTML(html, { minifyCSS: true, minifyJS: true });
+  // const final = minifyHTML(html, { minifyCSS: true, minifyJS: true });
+  const final = html;
 
   // write the html file
   await fs.ensureDir(path.parse(output).dir);
@@ -156,8 +222,12 @@ export const genHtml = async (params: GenHtmlParams) => {
 
 // DEVELOPMENT ONLY
 if (import.meta.main) {
-  genHtml({
-    entry: './pages/index.vue',
-    output: './dist/index.html',
+  const start = Date.now();
+  await fs.emptyDir(path.join(Deno.cwd(), ".vno"));
+  await genHtml({
+    entry: "./pages/index.vue",
+    output: "./.vno/dist/index.html",
+    mode: "development",
   });
+  console.log("html took", Date.now() - start, "ms");
 }
