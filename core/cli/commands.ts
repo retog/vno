@@ -44,8 +44,7 @@ export const create = async function (args: string[]): Promise<void> {
     Deno.chdir(dir);
   }
 
-  const __filename = path.fromFileUrl(import.meta.url);
-  const __dirname = path.dirname(path.fromFileUrl(import.meta.url));
+  const __dirname = new URL(".", import.meta.url).pathname;
 
   if (appType === "universal") {
     const currDir = Deno.cwd();
