@@ -1,7 +1,7 @@
 import type { Component, Config, Vue } from "../dts/factory.d.ts";
 import { configReader } from "../lib/config_reader.ts";
 import { vueLogger } from "../lib/vue_logger.ts";
-import { assertEquals, assertNotEquals } from "../utils/deps.ts";
+import { assertEquals, assertNotEquals, path } from "../utils/deps.ts";
 
 // configReader tests:
 Deno.test({
@@ -9,7 +9,7 @@ Deno.test({
 
   async fn(): Promise<void> {
     await Deno.writeTextFile(
-      "./vno.config.json",
+      path.join(Deno.cwd(), "./vno.config.json"),
       JSON.stringify({
         "root": "App",
         "entry": "../../example/test_demo/",
