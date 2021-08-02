@@ -9,7 +9,7 @@ Deno.test({
 
   async fn(): Promise<void> {
     await Deno.writeTextFile(
-      path.join(Deno.cwd(), "./vno.config.json"),
+      path.join(Deno.cwd(), "vno.config.json"),
       JSON.stringify({
         "root": "App",
         "entry": "../../example/test_demo/",
