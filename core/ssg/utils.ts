@@ -59,7 +59,7 @@ export const getExport = async (script: string) => {
   try {
     await Deno.writeTextFile(jsPath, minify(Language.JS, script));
     created = true;
-    obj = (await import(jsPath)) as VueExport;
+    obj = (await import("file://" + jsPath)) as VueExport;
   } finally {
     if (created) await Deno.remove(jsPath);
   }

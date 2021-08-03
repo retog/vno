@@ -11,6 +11,7 @@ import {
 } from "./components.ts";
 import { getTags, Mapped, PathData } from "./utils.ts";
 import { getAssets } from "./assets.ts";
+import * as CONSTANTS from "./constants.ts";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 (Vue.config as any).devtools = false;
@@ -194,9 +195,7 @@ export const genHtml = async (params: GenHtmlParams) => {
 
   // add reload
   if (params.reload) {
-    let reloadScript = await Deno.readTextFile(
-      path.join(__dirname, "reload.js"),
-    );
+    let reloadScript = CONSTANTS.reloadScript;
     if (params.reloadPort) {
       reloadScript = reloadScript.replace(/8080/, params.reloadPort.toString());
     }

@@ -9,8 +9,8 @@ import { quietArg } from "./fns.ts";
 import { cmnd, serverTs, vnoconfig } from "./constants.ts";
 import { Config } from "../dts/factory.d.ts";
 import { ssrTemplate } from "../cli/templates.ts";
-import { existsSync } from "https://deno.land/std/fs/mod.ts";
 import * as out from "./constants.ts";
+import { create as createSsg } from "../ssg/create.ts";
 
 //Contains Create, Build, Run, and flag commands
 export const create = async function (args: string[]): Promise<void> {
@@ -44,21 +44,12 @@ export const create = async function (args: string[]): Promise<void> {
     Deno.chdir(dir);
   }
 
-  const __dirname = new URL(".", import.meta.url).pathname;
-
   if (appType === "universal") {
-    const currDir = Deno.cwd();
-    const templatePath = path.resolve(
-      __dirname,
-      "../templates/universal",
-    );
-
     fn.green(out.creating);
 
     renderProgress();
 
-    // copy vno-ssg directory to current build directory
-    fs.copy(templatePath, currDir, { overwrite: true });
+    await createSsg(Deno.cwd());
   } else {
     //arguments passed into CLI placed into createSinglePageApp as obj
     await createSinglePageApp({
@@ -81,7 +72,7 @@ export const build = async function (args: string[]): Promise<void> {
 
   if (cmnd.buildSsr.test(args[1])) {
     //If server.ts files exists, do not write over it
-    const isServerTsExist: boolean = existsSync(`${Deno.cwd()}/${serverTs}`);
+    const isServerTsExist: boolean = fs.existsSync(`${Deno.cwd()}/${serverTs}`);
     !isServerTsExist
       ? await Deno.writeTextFile(serverTs, ssrTemplate)
       : fn.green(`[${serverTs} file located]`);
