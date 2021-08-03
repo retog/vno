@@ -83,7 +83,7 @@ interface VnoConfig {
 }
 
 const getConfig = (): Promise<VnoConfig> => {
-  return import(path.join(Deno.cwd(), "vno.config.js"));
+  return import("file://" + path.join(Deno.cwd(), "vno.config.js"));
 };
 
 export const startDev = async () => {
