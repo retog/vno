@@ -30,10 +30,7 @@ const main = async (name: string) => {
       continue;
     }
 
-    const content = (await Deno.readTextFile(file.path)).replaceAll(
-      /(\t|\n)/g,
-      " ",
-    ).replaceAll('"', "'");
+    const content = await Deno.readTextFile(file.path);
     files.push({
       ...file,
       path: file.path.replace(root, ""),
@@ -41,9 +38,7 @@ const main = async (name: string) => {
     });
   }
 
-  const script = `const filesStr = \`\n${
-    JSON.stringify(files)
-  }\n\`;\nexport const files: {path: string; name: string; isFile: boolean; isDirectory: boolean; isSymlink: boolean; content: string;}[] = JSON.parse(filesStr);`;
+  const script = `export const files = ${JSON.stringify(files)};`;
 
   await Deno.writeTextFile(path.join(__dirname, name + ".ts"), script);
 };
