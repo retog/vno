@@ -58,11 +58,11 @@ export const rootComponent = (options: CreateInputs) => {
     `<template>
   <div id="${options.root.toLowerCase()}">
     <img
-      src="https://svgshare.com/i/SNz.svg"
+      src="https://user-images.githubusercontent.com/63819200/128429048-5927eb19-b151-4855-93e3-2e0755c447a2.png"
       alt="image"
       border="0"
       width="450"
-      height="450"
+      height="auto"
     />
     <${
       options.components[0]
