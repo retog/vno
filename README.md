@@ -41,7 +41,7 @@
 - vno requires the use of Deno version 1.10 or above
 - run the following command in your terminal to install vno on your machine.
 
-```
+```bash
 deno install --allow-net --unstable https://deno.land/x/vno/install/vno.ts
 ```
 
@@ -77,7 +77,7 @@ deno install --allow-net --unstable https://deno.land/x/vno/install/vno.ts
 - vno.config.json should be in the root of your project
 - following is a description of the object interface:
 
-```
+```ts
 interface Config {
     entry: string;
       //entry is the path to root component's directory : i.e. './client/'
@@ -105,7 +105,7 @@ interface Config {
 - If project name argument is omitted, then project will be created in current
   working directory.
 
-```
+```bash
 vno create [project name]
 ```
 
@@ -113,7 +113,7 @@ vno create [project name]
 
 - _OR_ If you'd rather not install:
 
-```
+```bash
 deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/vno/install/vno.ts create [project name]
 ```
 
@@ -122,13 +122,13 @@ deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/v
 - To invoke the build method and dynamically create bundled js and css files for
   your application type the following into the terminal:
 
-```
+```bash
 vno build
 ```
 
 _OR_
 
-```
+```bash
 deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/vno/install/vno.ts build
 ```
 
@@ -140,12 +140,12 @@ deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/v
 
 - To invoke the build method and dynamically create bundled js, css files, and a server.ts for server side rendering your application, type the following into the terminal:
 
-```
+```bash
 vno build --ssr
 ```
 _OR_
 
-```
+```bash
 deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/vno/install/vno.ts build --ssr
 ```
 
@@ -159,13 +159,13 @@ deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/v
     - Live reload injects a WebSocket connection to build.js. Remove it with: `vno run build`
 - Invoke the dev server like so:
 
-```
+```bash
 vno run dev
 ```
 
 _OR_
 
-```
+```bash
 deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/vno/install/vno.ts run dev
 ```
 
@@ -181,7 +181,7 @@ deno run --allow-read --allow-write --allow-net --unstable https://deno.land/x/v
   `https://deno.land/x/vno/dist/mod.ts` With a vno.config.json, no argument is
   needed The API will search for the config and apply it to your application
 
-```
+```ts
 import { Factory } from 'https://deno.land/x/vno/dist/mod.ts';
 
 const vno = new Factory();
@@ -191,7 +191,7 @@ await vno.build();
 without a vno.config.json, you can input the object directly into the Factory
 instance
 
-```
+```ts
 import { Factory } from 'https://deno.land/x/vno/dist/mod.ts';
 
 const vno = Factory.create({
@@ -214,7 +214,7 @@ await vno.build();
 - After running the build, parsed components are accessible inside the storage
   property on the Factory class.
 
-```
+```ts
 vno.storage.get('App');
 ```
 
