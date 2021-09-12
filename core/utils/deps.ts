@@ -35,7 +35,7 @@ export { _, exec, ProgressBar };
 
 // compilers
 export { compile as scssCompiler } from "https://raw.githubusercontent.com/crewdevio/deno_sass2/master/mod.ts";
-export * as sfcCompiler from "https://denopkg.com/crewdevio/vue-deno-compiler/mod.ts";
+export * as sfcCompiler from "https://deno.land/x/vue_sfc_compiler/mod.ts";
 
 //event emitter for live reload
 import { EventEmitter } from "https://deno.land/std@0.93.0/node/events.ts";
